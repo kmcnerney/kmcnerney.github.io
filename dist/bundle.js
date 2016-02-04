@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "94738319d9d85fe0042f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "7a784fbe1736b0285734"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -1579,7 +1579,7 @@
 /* 169 */
 /***/ function(module, exports) {
 
-	eval("'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nvar NICE = exports.NICE = 'red';\nvar SUPER_NICE = exports.SUPER_NICE = 'blue';//@ sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiMTY5LmpzIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vL3NyYy9jb2xvcnMuanM/MTllYyJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgY29uc3QgTklDRSA9ICdyZWQnO1xuZXhwb3J0IGNvbnN0IFNVUEVSX05JQ0UgPSAnYmx1ZSc7XG5cblxuLyoqIFdFQlBBQ0sgRk9PVEVSICoqXG4gKiogc3JjL2NvbG9ycy5qc1xuICoqLyJdLCJtYXBwaW5ncyI6Ijs7Ozs7QUFBQTsiLCJzb3VyY2VSb290IjoiIn0=");
+	eval("'use strict';\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nvar NICE = exports.NICE = 'yellow';\nvar SUPER_NICE = exports.SUPER_NICE = 'blue';//@ sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiMTY5LmpzIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vL3NyYy9jb2xvcnMuanM/MTllYyJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgY29uc3QgTklDRSA9ICd5ZWxsb3cnO1xuZXhwb3J0IGNvbnN0IFNVUEVSX05JQ0UgPSAnYmx1ZSc7XG5cblxuLyoqIFdFQlBBQ0sgRk9PVEVSICoqXG4gKiogc3JjL2NvbG9ycy5qc1xuICoqLyJdLCJtYXBwaW5ncyI6Ijs7Ozs7QUFBQTsiLCJzb3VyY2VSb290IjoiIn0=");
 
 /***/ }
 /******/ ]);
