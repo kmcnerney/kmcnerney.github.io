@@ -25,7 +25,7 @@ export default class SignUpForm extends React.Component {
 		return (
 			<Form horizontal className={this.props.className} onSubmit={this.onSubmit}>
 				<h1 className="text-center">
-					Join {Constants.COMPANY_NAME}!
+					Join {Constants.PROJECT_NAME}!
 				</h1>
 				<Row className="col-xs-offset-3 col-xs-6">
 					<FieldGroup

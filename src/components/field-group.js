@@ -17,8 +17,6 @@ export default class FieldGroup extends React.Component {
 
 FieldGroup.propTypes = {
 	id: React.PropTypes.string.isRequired,
-	type: React.PropTypes.string,
-	componentClass: React.PropTypes.string,
 	label: React.PropTypes.string,
 	help: React.PropTypes.string
 }

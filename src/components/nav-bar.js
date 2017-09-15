@@ -22,7 +22,7 @@ export default class NavBar extends React.Component {
 			<Navbar inverse className="landing-nav">
 				<Navbar.Header>
 					<Navbar.Brand>
-						<a href="#">{Constants.COMPANY_NAME}</a>
+						<a href="#">{Constants.PROJECT_NAME}</a>
 					</Navbar.Brand>
 					<Navbar.Toggle />
 				</Navbar.Header>
