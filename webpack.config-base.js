@@ -26,8 +26,6 @@ module.exports = {
   },
 
   resolve: {
-    root: __dirname,
-    
     // Directory names to be searched for modules
     modules: ['src', 'node_modules']
   },
@@ -57,5 +55,5 @@ module.exports = {
     ]
   },
 
-  devtool: '#inline-source-map',
+  devtool: '#inline-source-map'
 }

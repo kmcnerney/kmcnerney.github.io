@@ -1,5 +1,5 @@
 'use strict'
-require('file-loader!../index.html')
+
 import Backbone from 'backbone'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -20,6 +20,8 @@ import Account from './components/account'
 
 // Constants
 import Constants from './constants.js'
+
+require('file-loader!../index.html')
 
 const store = createStore(rootReducer, {},
 	window.devToolsExtension ? window.devToolsExtension() : f => f
