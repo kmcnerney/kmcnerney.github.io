@@ -13,7 +13,6 @@ import Constants from '../constants.js'
 export default class NavBar extends React.Component {
 	constructor (props) {
 		super(props)
-		console.log(props)
 		this.togglePage = this.togglePage.bind(this)
 	}
 

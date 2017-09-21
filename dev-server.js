@@ -8,12 +8,14 @@ const WebpackDevServer = require('webpack-dev-server')
 
 const config = require('./webpack.config-dev')
 
+const host = '127.0.0.1'
+const port = 5000
+
 const server = express()
+server.use('/assets', proxy(url.parse(`http://${host}:${port}/assets`)))
 
-server.use('/assets', proxy(url.parse(`http://${config.host}:${config.port}/assets`)))
-
-server.get('/*', function(req, res) {
-  res.sendFile(config.resolve.root + '/index.html')
+server.get('/*', function(req, res) {   
+  res.sendFile(__dirname + '/index.html')   
 })
 
 new WebpackDevServer(webpack(config), {
@@ -29,12 +31,12 @@ new WebpackDevServer(webpack(config), {
   stats: {
     colors: false
   }
-}).listen(config.port, config.host, function(err) {
+}).listen(port, host, function(err) {
   if (err) {
     console.log(err)
   }
 })
 
-server.listen(config.port)
+server.listen(port)
 
-console.log(`Listening at http://${config.host}:${config.port}`)
+console.log(`Listening at http://${host}:${port}`)
