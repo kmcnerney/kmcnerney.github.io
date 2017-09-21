@@ -11,7 +11,14 @@ const config = require('./webpack.config-dev')
 const host = '127.0.0.1'
 const port = 5000
 
-var server = new WebpackDevServer(webpack(config), {
+const server = express()
+server.use('/assets', proxy(url.parse(`http://${host}:${port}/assets`)))
+
+server.get('/*', function(req, res) {   
+  res.sendFile(__dirname + '/index.html')   
+})
+
+new WebpackDevServer(webpack(config), {
   contentBase: config.output.path,
   publicPath: config.output.publicPath,
   hot: true,
