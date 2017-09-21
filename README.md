@@ -1,10 +1,7 @@
-A client web portal for managing a venue account.
-
-
 1) Install dependencies:
 
 ```
-npm install
+yarn
 ```
 
 2) Run dev server:
