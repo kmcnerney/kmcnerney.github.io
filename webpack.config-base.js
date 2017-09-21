@@ -29,7 +29,7 @@ module.exports = {
     root: __dirname,
     
     // Directory names to be searched for modules
-    modules: ['src', 'node_modules'],
+    modules: ['src', 'node_modules']
   },
 
   plugins: [
