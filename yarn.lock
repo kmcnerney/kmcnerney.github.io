@@ -4041,7 +4041,7 @@ markdown-loader@^0.1.7:
     marked "^0.3.2"
     object-assign "^2.0.0"
 
-marked@^0.3.19, marked@^0.3.2:
+marked@^0.3.2:
   version "0.3.19"
   resolved "http://nexus.core.cvent.org:8081/nexus/content/groups/npm-public/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
 
@@ -4197,7 +4197,7 @@ modelo@^4.2.0:
   version "4.2.3"
   resolved "http://nexus.core.cvent.org:8081/nexus/content/groups/npm-public/modelo/-/modelo-4.2.3.tgz#b278588a4db87fc1e5107ae3a277c0876f38d894"
 
-moment@2.x.x, moment@^2.22.0:
+moment@2.x.x:
   version "2.22.0"
   resolved "http://nexus.core.cvent.org:8081/nexus/content/groups/npm-public/moment/-/moment-2.22.0.tgz#7921ade01017dd45186e7fee5f424f0b8663a730"
 
