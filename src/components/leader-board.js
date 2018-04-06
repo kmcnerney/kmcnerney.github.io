@@ -3,7 +3,7 @@
 import React from 'react'
 
 // Stores
-import PgaStore from '../stores/pga-store'
+import GolfStore from '../stores/golf'
 
 // Components
 import BootstrapTable from 'react-bootstrap-table-next'
@@ -15,18 +15,18 @@ let columns = [
 	},
 	{
 		dataField: 'player_bio.first_name',
-		text: 'First Name'
+		text: 'Golfer'
 	},
 	{
 		dataField: 'player_bio.last_name',
-		text: 'Last Name'
+		text: ''
 	}
 ]
 
 function getState () {
 	return {
-		tournament: PgaStore.getCurrentTournament(),
-		realTimeData: PgaStore.getRealTimeData()
+		tournament: GolfStore.getCurrentTournament(),
+		realTimeData: GolfStore.getRealTimeData()
 	}
 }
 
@@ -40,11 +40,11 @@ export default class LeaderBoard extends React.Component {
 	}
 
 	componentDidMount () {
-		PgaStore.addChangeListener(this._onChange)
+		GolfStore.addChangeListener(this._onChange)
 	}
 
 	componentWillUnmount () {
-		PgaStore.removeChangeListener(this._onChange)
+		GolfStore.removeChangeListener(this._onChange)
 	}
 
 	render () {

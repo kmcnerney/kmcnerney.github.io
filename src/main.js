@@ -9,13 +9,12 @@ import { Provider } from 'react-redux'
 import rootReducer from './reducers/root-reducer'
 
 // Actions
-import Actions from './actions/actions'
+import GolfActions from './actions/golf'
 
 // Styles
 import './less/main.less'
 
 // Components
-import NavBar from './components/nav-bar'
 import LeaderBoard from './components/leader-board'
 
 // Constants
@@ -31,7 +30,6 @@ function renderContent (page, content) {
 	return ReactDOM.render(
 		<Provider store={store}>
 			<div>
-				<NavBar page={page} />
 				{content}
 			</div>
 		</Provider>, document.getElementById('root-div')
@@ -44,8 +42,8 @@ const Router = Backbone.Router.extend({
 	},
 
 	leaderBoard () {
-		Actions.getCurrentTournament()
-		Actions.getRealTimeData()
+		GolfActions.getCurrentTournament()
+		GolfActions.getRealTimeData()
 		renderContent(Constants.LEADER_BOARD_PAGE, <LeaderBoard />)
 	}
 })
