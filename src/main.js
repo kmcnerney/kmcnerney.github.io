@@ -8,15 +8,15 @@ import { Provider } from 'react-redux'
 
 import rootReducer from './reducers/root-reducer'
 
+// Actions
+import Actions from './actions/actions'
+
 // Styles
 import './less/main.less'
 
 // Components
 import NavBar from './components/nav-bar'
-import LogInForm from './components/log-in-form'
-import SignUpForm from './components/sign-up-form'
-import Dashboard from './components/dashboard'
-import Account from './components/account'
+import LeaderBoard from './components/leader-board'
 
 // Constants
 import Constants from './constants.js'
@@ -40,27 +40,13 @@ function renderContent (page, content) {
 
 const Router = Backbone.Router.extend({
 	routes: {
-		'': Constants.LOG_IN_PAGE,
-		logIn: Constants.LOG_IN_PAGE,
-		signUp: Constants.SIGN_UP_PAGE,
-		dashboard: Constants.DASHBOARD_PAGE,
-		account: Constants.ACCOUNT_PAGE
+		'': Constants.LEADER_BOARD_PAGE
 	},
 
-	logIn () {
-		renderContent(Constants.LOG_IN_PAGE, <LogInForm />)
-	},
-
-	signUp () {
-		renderContent(Constants.SIGN_UP_PAGE, <SignUpForm />)
-	},
-
-	dashboard () {
-		renderContent(Constants.DASHBOARD_PAGE, <Dashboard />)
-	},
-
-	account () {
-		renderContent(Constants.ACCOUNT_PAGE, <Account />)
+	leaderBoard () {
+		Actions.getCurrentTournament()
+		Actions.getRealTimeData()
+		renderContent(Constants.LEADER_BOARD_PAGE, <LeaderBoard />)
 	}
 })
 

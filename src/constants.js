@@ -3,8 +3,10 @@
 export default {
 	PROJECT_NAME: 'Project',
 
-	LOG_IN_PAGE: 'logIn',
-	SIGN_UP_PAGE: 'signUp',
-	DASHBOARD_PAGE: 'dashboard',
-	ACCOUNT_PAGE: 'account'
+	LEADER_BOARD_PAGE: 'leaderBoard',
+
+	ACTIONS: {
+		GET_CURRENT_TOURNAMENT: 'GET_CURRENT_TOURNAMENT',
+		GET_REAL_TIME_DATA: 'GET_REAL_TIME_DATA'
+	}
 }

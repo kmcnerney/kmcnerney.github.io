@@ -1,9 +1,6 @@
 'use strict'
 
-import _ from 'lodash'
-
 import React from 'react'
-import Backbone from 'backbone'
 
 import { Navbar, Nav, NavItem } from 'react-bootstrap'
 
@@ -13,7 +10,7 @@ import Constants from '../constants.js'
 export default class NavBar extends React.Component {
 	constructor (props) {
 		super(props)
-		this.togglePage = this.togglePage.bind(this)
+		this.signIn = this.signIn.bind(this)
 	}
 
 	render () {
@@ -27,19 +24,16 @@ export default class NavBar extends React.Component {
 				</Navbar.Header>
 				<Navbar.Collapse>
 					<Nav pullRight>
-						<NavItem eventKey={Constants.LOG_IN_PAGE} onClick={() => this.togglePage(Constants.LOG_IN_PAGE)}>Log In</NavItem>
-						<NavItem eventKey={Constants.SIGN_UP_PAGE} onClick={() => this.togglePage(Constants.SIGN_UP_PAGE)}>Sign Up</NavItem>
+						<NavItem eventKey={'signIn'} onClick={() => this.signIn()}>Sign In</NavItem>
 					</Nav>
 				</Navbar.Collapse>
 			</Navbar>
 		)
 	}
 
-	togglePage (page) {
-		if (!_.isEqual(page, this.props.page)) {
-			Backbone.history.navigate(page)
-			Backbone.history.loadUrl(page)
-		}
+	signIn (page) {
+		// gapi.auth2.getAuthInstance().signIn()
+		return null
 	}
 }
 

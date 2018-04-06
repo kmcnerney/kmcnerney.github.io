@@ -1,13 +1,24 @@
 'use strict'
 
-export function logIn (email, password) {
-	console.log('logging in...')
+import Dispatcher from '../dispatcher'
+
+// Constants
+import Constants from '../constants.js'
+
+const Actions = {
+	getCurrentTournament (fn) {
+		Dispatcher.handleViewAction({
+			actionType: Constants.ACTIONS.GET_CURRENT_TOURNAMENT,
+			fn
+		})
+	},
+
+	getRealTimeData (fn) {
+		Dispatcher.handleViewAction({
+			actionType: Constants.ACTIONS.GET_REAL_TIME_DATA,
+			fn
+		})
+	}
 }
 
-export function sendEmail (info) {
-	console.log('sending email...')
-}
-
-export function saveAccount (info) {
-	console.log('saving account...')
-}
+export default Actions
