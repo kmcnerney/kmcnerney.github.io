@@ -13,12 +13,38 @@ import GolfActions from '../actions/golf'
 // Constants
 import Constants from '../constants'
 
+let _calcuttaResults
+let _payoutInfo
 let _currentTournament
 let _realTimeData
 
 function clearState () {
+	_calcuttaResults = {}
+	_payoutInfo = {}
 	_currentTournament = {}
 	_realTimeData = {}
+}
+
+function getCalcuttaResults (fn) {
+	GolfAPI.getCalcuttaResults((err, res) => {
+		if (err) {
+			return fn(err)
+		}
+
+		_calcuttaResults = res
+		return fn(err, res)
+	})
+}
+
+function getPayoutInfo (fn) {
+	GolfAPI.getPayoutInfo((err, res) => {
+		if (err) {
+			return fn(err)
+		}
+
+		_payoutInfo = res
+		return fn(err, res)
+	})
 }
 
 function getCurrentTournament (fn) {
@@ -48,6 +74,14 @@ function getRealTimeData (fn) {
 }
 
 const GolfStore = _.assign({
+	getCalcuttaResults () {
+		return _calcuttaResults
+	},
+
+	getPayoutInfo () {
+		return _payoutInfo
+	},
+
 	getCurrentTournament () {
 		return _currentTournament
 	},
@@ -63,6 +97,32 @@ GolfStore.dispatchToken = Dispatcher.register(({action}) => {
 	switch (action.actionType) {
 	case 'CLEAR_STATE':
 		clearState()
+		break
+
+	case Constants.ACTIONS.GET_CALCUTTA_RESULTS:
+		getCalcuttaResults(err => {
+			if (err) {
+				console.log(err)
+				GolfStore.emitChange('getCalcuttaResults', new Error('Failed to get calcutta results.'))
+				fn(err)
+			} else {
+				GolfStore.emitChange('getCalcuttaResults')
+				fn(null)
+			}
+		})
+		break
+
+	case Constants.ACTIONS.GET_PAYOUT_INFO:
+		getPayoutInfo(err => {
+			if (err) {
+				console.log(err)
+				GolfStore.emitChange('getPayoutInfo', new Error('Failed to get payout info.'))
+				fn(err)
+			} else {
+				GolfStore.emitChange('getPayoutInfo')
+				fn(null)
+			}
+		})
 		break
 
 	case Constants.ACTIONS.GET_CURRENT_TOURNAMENT:

@@ -6,6 +6,20 @@ import Dispatcher from '../dispatcher'
 import Constants from '../constants.js'
 
 const GolfActions = {
+	getCalcuttaResults (fn) {
+		Dispatcher.handleViewAction({
+			actionType: Constants.ACTIONS.GET_CALCUTTA_RESULTS,
+			fn
+		})
+	},
+
+	getPayoutInfo (fn) {
+		Dispatcher.handleViewAction({
+			actionType: Constants.ACTIONS.GET_PAYOUT_INFO,
+			fn
+		})
+	},
+
 	getCurrentTournament (fn) {
 		Dispatcher.handleViewAction({
 			actionType: Constants.ACTIONS.GET_CURRENT_TOURNAMENT,

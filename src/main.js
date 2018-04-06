@@ -42,6 +42,8 @@ const Router = Backbone.Router.extend({
 	},
 
 	leaderBoard () {
+		GolfActions.getCalcuttaResults()
+		GolfActions.getPayoutInfo()
 		GolfActions.getCurrentTournament()
 		GolfActions.getRealTimeData()
 		renderContent(Constants.LEADER_BOARD_PAGE, <LeaderBoard />)

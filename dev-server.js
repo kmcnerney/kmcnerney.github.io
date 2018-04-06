@@ -9,7 +9,7 @@ const WebpackDevServer = require('webpack-dev-server')
 const config = require('./webpack.config-dev')
 
 const host = '127.0.0.1'
-const port = 5000
+const port = 8000
 
 const server = express()
 server.use('/build', proxy(url.parse(`http://${host}:${port}/build`)))

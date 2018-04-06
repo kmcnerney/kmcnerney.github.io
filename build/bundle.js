@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f039472573ee1c9ddbdc"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "753d954e2a307beb34d5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -8601,7 +8601,7 @@
 
 
 	// Actions
-	__webpack_require__(441);
+	__webpack_require__(442);
 
 	// Constants
 
@@ -8631,6 +8631,8 @@
 		},
 
 		leaderBoard: function leaderBoard() {
+			_golf2.default.getCalcuttaResults();
+			_golf2.default.getPayoutInfo();
 			_golf2.default.getCurrentTournament();
 			_golf2.default.getRealTimeData();
 			renderContent(_constants2.default.LEADER_BOARD_PAGE, _react2.default.createElement(_leaderBoard2.default, null));
@@ -47439,6 +47441,18 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var GolfActions = {
+		getCalcuttaResults: function getCalcuttaResults(fn) {
+			_dispatcher2.default.handleViewAction({
+				actionType: _constants2.default.ACTIONS.GET_CALCUTTA_RESULTS,
+				fn: fn
+			});
+		},
+		getPayoutInfo: function getPayoutInfo(fn) {
+			_dispatcher2.default.handleViewAction({
+				actionType: _constants2.default.ACTIONS.GET_PAYOUT_INFO,
+				fn: fn
+			});
+		},
 		getCurrentTournament: function getCurrentTournament(fn) {
 			_dispatcher2.default.handleViewAction({
 				actionType: _constants2.default.ACTIONS.GET_CURRENT_TOURNAMENT,
@@ -61100,6 +61114,8 @@
 		LEADER_BOARD_PAGE: 'leaderBoard',
 
 		ACTIONS: {
+			GET_CALCUTTA_RESULTS: 'GET_CALCUTTA_RESULTS',
+			GET_PAYOUT_INFO: 'GET_PAYOUT_INFO',
 			GET_CURRENT_TOURNAMENT: 'GET_CURRENT_TOURNAMENT',
 			GET_REAL_TIME_DATA: 'GET_REAL_TIME_DATA'
 		}
@@ -61504,11 +61520,15 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _lodash = __webpack_require__(397);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
 	var _golf = __webpack_require__(410);
 
 	var _golf2 = _interopRequireDefault(_golf);
 
-	var _reactBootstrapTableNext = __webpack_require__(414);
+	var _reactBootstrapTableNext = __webpack_require__(415);
 
 	var _reactBootstrapTableNext2 = _interopRequireDefault(_reactBootstrapTableNext);
 
@@ -61535,12 +61555,115 @@
 	}, {
 		dataField: 'player_bio.last_name',
 		text: ''
+	}, {
+		dataField: 'buyer',
+		text: 'Buyer-Percentage'
+	}, {
+		dataField: 'odds',
+		text: 'Odds'
+	}, {
+		dataField: 'cost',
+		text: 'Cost'
+	}, {
+		dataField: 'expected_value',
+		text: 'Expected Value'
+	}, {
+		dataField: 'actual_value',
+		text: 'Actual Value'
 	}];
 
+	function getPayoutForPositionCurrency(payoutInfo, pos) {
+		return payoutInfo[pos].cellsArray[2];
+	}
+
+	function getPayoutForPositionNumber(payoutInfo, pos) {
+		return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9\.-]+/g, ''));
+	}
+
 	function getState() {
+		var calcuttaResults = _golf2.default.getCalcuttaResults();
+		var payoutInfo = _golf2.default.getPayoutInfo();
+		var realTimeData = _golf2.default.getRealTimeData() ? _golf2.default.getRealTimeData().leaderboard.players : [];
+
+		if (calcuttaResults && payoutInfo) {
+			var currPosition = 1;
+			var golfersPaid = 0;
+			for (var golferRow = 0; golferRow < realTimeData.length; golferRow++) {
+				var golfer = realTimeData[golferRow];
+				var actualVal = '$0';
+				var currPosMatch = _lodash2.default.isEqual('T' + currPosition, golfer.current_position);
+
+				if (golfersPaid < 11 || currPosMatch) {
+					if (!currPosMatch) {
+						currPosition = golfer.current_position.match(/\d+/)[0];
+					}
+
+					if (_lodash2.default.isEqual('' + currPosition, golfer.current_position)) {
+						// actualVal = the payout for this position
+						actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition);
+						currPosition++;
+					} else if (_lodash2.default.isEqual('T' + currPosition, golfer.current_position)) {
+						// actualVal = the payout for this position + the payout for how many tied / how many tied
+						actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition);
+					}
+
+					golfersPaid++;
+				}
+
+				realTimeData[golferRow].actual_value = actualVal.replace(/\s/g, '');
+
+				for (var buyerRow = 0; buyerRow < calcuttaResults.length; buyerRow++) {
+					var buyer = calcuttaResults[buyerRow].cellsArray;
+
+					if (_lodash2.default.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
+						realTimeData[golferRow].buyer = buyer[5];
+						realTimeData[golferRow].odds = buyer[2];
+						realTimeData[golferRow].cost = buyer[6].replace(/\s/g, '');
+						realTimeData[golferRow].expected_value = buyer[7].replace(/\s/g, '');
+					}
+				}
+			}
+
+			// go back through the data to split tied payouts
+			if (realTimeData.length > 0) {
+				var currVal = realTimeData[0].actual_value;
+				var tieCount = 1;
+				var timeToSplitPayout = false;
+
+				for (var i = 1; i <= golfersPaid; i++) {
+					if (_lodash2.default.isEqual(realTimeData[i].actual_value, currVal)) {
+						timeToSplitPayout = true;
+						tieCount++;
+					} else if (timeToSplitPayout) {
+						if (i > 0) {
+							var totalPayout = 0;
+							for (var j = tieCount - 1; j >= 0; j--) {
+								var position = i - j;
+								var thisPayout = getPayoutForPositionNumber(payoutInfo, position);
+								if (!_lodash2.default.isEqual(thisPayout, 1201)) {
+									totalPayout += thisPayout;
+								}
+							}
+
+							var finalPayout = totalPayout / tieCount;
+							for (var _j = tieCount - 1; _j >= 0; _j--) {
+								var _position = i - 1 - _j;
+								realTimeData[_position].actual_value = '$' + finalPayout;
+							}
+							tieCount = 1;
+							timeToSplitPayout = false;
+						}
+					}
+					currVal = realTimeData[i].actual_value;
+				}
+			}
+		}
+
 		return {
+			calcuttaResults: calcuttaResults,
+			payoutInfo: payoutInfo,
 			tournament: _golf2.default.getCurrentTournament(),
-			realTimeData: _golf2.default.getRealTimeData()
+			realTimeData: realTimeData
 		};
 	}
 
@@ -61571,11 +61694,9 @@
 		}, {
 			key: 'render',
 			value: function render() {
-				var data = this.state.realTimeData ? this.state.realTimeData.leaderboard.players : [];
-
 				return _react2.default.createElement(_reactBootstrapTableNext2.default, {
 					keyField: 'leaderBoard',
-					data: data,
+					data: this.state.realTimeData,
 					columns: columns
 				});
 			}
@@ -61633,18 +61754,44 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	// Actions
-	var _currentTournament = void 0;
+	var _calcuttaResults = void 0;
 
 	// Constants
 
 
 	// APIs
 
+	var _payoutInfo = void 0;
+	var _currentTournament = void 0;
 	var _realTimeData = void 0;
 
 	function clearState() {
+		_calcuttaResults = {};
+		_payoutInfo = {};
 		_currentTournament = {};
 		_realTimeData = {};
+	}
+
+	function getCalcuttaResults(fn) {
+		_golf2.default.getCalcuttaResults(function (err, res) {
+			if (err) {
+				return fn(err);
+			}
+
+			_calcuttaResults = res;
+			return fn(err, res);
+		});
+	}
+
+	function getPayoutInfo(fn) {
+		_golf2.default.getPayoutInfo(function (err, res) {
+			if (err) {
+				return fn(err);
+			}
+
+			_payoutInfo = res;
+			return fn(err, res);
+		});
 	}
 
 	function getCurrentTournament(fn) {
@@ -61674,6 +61821,12 @@
 	}
 
 	var GolfStore = _lodash2.default.assign({
+		getCalcuttaResults: function getCalcuttaResults() {
+			return _calcuttaResults;
+		},
+		getPayoutInfo: function getPayoutInfo() {
+			return _payoutInfo;
+		},
 		getCurrentTournament: function getCurrentTournament() {
 			return _currentTournament;
 		},
@@ -61690,6 +61843,32 @@
 		switch (action.actionType) {
 			case 'CLEAR_STATE':
 				clearState();
+				break;
+
+			case _constants2.default.ACTIONS.GET_CALCUTTA_RESULTS:
+				getCalcuttaResults(function (err) {
+					if (err) {
+						console.log(err);
+						GolfStore.emitChange('getCalcuttaResults', new Error('Failed to get calcutta results.'));
+						fn(err);
+					} else {
+						GolfStore.emitChange('getCalcuttaResults');
+						fn(null);
+					}
+				});
+				break;
+
+			case _constants2.default.ACTIONS.GET_PAYOUT_INFO:
+				getPayoutInfo(function (err) {
+					if (err) {
+						console.log(err);
+						GolfStore.emitChange('getPayoutInfo', new Error('Failed to get payout info.'));
+						fn(err);
+					} else {
+						GolfStore.emitChange('getPayoutInfo');
+						fn(null);
+					}
+				});
 				break;
 
 			case _constants2.default.ACTIONS.GET_CURRENT_TOURNAMENT:
@@ -62320,9 +62499,78 @@
 
 	var _jquery2 = _interopRequireDefault(_jquery);
 
+	var _sheetrock = __webpack_require__(414);
+
+	var _sheetrock2 = _interopRequireDefault(_sheetrock);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// import gapi from 'gapi-client'
+	// Client ID and API key from the Developer Console
+	// var CLIENT_ID = '347297161830-3qbe3nldcr8ef6e1r6fkqsn458kddobn.apps.googleusercontent.com';
+	// var API_KEY = 'AIzaSyCBGWPwzJQnwQnE_-YXHcwc5oVkhuz0o3M';
+
+	// // Array of API discovery doc URLs for APIs used by the quickstart
+	// var DISCOVERY_DOCS = ['https://sheets.googleapis.com/$discovery/rest?version=v4'];
+
+	// // Authorization scopes required by the API; multiple scopes can be
+	// // included, separated by spaces.
+	// var SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+
+	// function start() {
+	//   // 2. Initialize the JavaScript client library.
+	//   gapi.client.init({
+	//     'apiKey': API_KEY,
+	//     // Your API key will be automatically added to the Discovery Document URLs.
+	//     'discoveryDocs': DISCOVERY_DOCS,
+	//     // clientId and scope are optional if auth is not required.
+	//     'clientId': CLIENT_ID,
+	//     'scope': SCOPES,
+	//   }).then(function() {
+	//     // 3. Initialize and make the API request.
+	//     return gapi.client.sheets.spreadsheets.values.get({
+	//           spreadsheetId: '1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM',
+	//           range: 'A2:H81',
+	//         })
+	//   }).then(function(response) {
+	//   	console.log('Calcutta Results:')
+	//     console.log(response);
+	//   }, function(reason) {
+	//     console.log('Error: ' + reason.result.error.message);
+	//   });
+	// };
+	// // 1. Load the JavaScript client library.
+	// gapi.load('client', start);
+
 	var ajaxCalls = {
+		getCalcuttaResults: function getCalcuttaResults(fn) {
+			(0, _sheetrock2.default)({
+				url: 'https://docs.google.com/spreadsheets/d/1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM/edit#gid=0',
+				query: 'select A,B,C,D,E,F,G,H',
+				callback: function callback(error, options, response) {
+					if (!error) {
+						console.log(response);
+						return fn(null, response.rows);
+					} else {
+						return fn(error);
+					}
+				}
+			});
+		},
+		getPayoutInfo: function getPayoutInfo(fn) {
+			(0, _sheetrock2.default)({
+				url: 'https://docs.google.com/spreadsheets/d/1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM/edit#gid=0',
+				query: 'select J,K,L',
+				callback: function callback(error, options, response) {
+					if (!error) {
+						console.log(response);
+						return fn(null, response.rows);
+					} else {
+						return fn(error);
+					}
+				}
+			});
+		},
 		getCurrentTournament: function getCurrentTournament(fn) {
 			_jquery2.default.ajax({
 				url: 'https://statdata.pgatour.com/r/current/message.json',
@@ -62354,17 +62602,24 @@
 /* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	!function(e,t){ true?module.exports=t():"function"==typeof define&&define.amd?define("sheetrock",[],t):"object"==typeof exports?exports.sheetrock=t():e.sheetrock=t()}(this,function(){return function(e){function t(n){if(r[n])return r[n].exports;var o=r[n]={exports:{},id:n,loaded:!1};return e[n].call(o.exports,o,o.exports,t),o.loaded=!0,o.exports}var r={};return t.m=e,t.c=r,t.p="",t(0)}([function(e,t,r){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function o(){function e(e){if(e&&"SheetrockError"===e.name&&o&&o.update&&o.update({failed:!0}),t.callback)return void t.callback(e,n,s);if(e)throw e}var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:null,n=null,o=null,s=null;try{n=new i.default(a({target:this},t),!!r),o=new l.default(n),s=new c.default(o)}catch(t){e(t)}return r?s.loadData(r,e):n&&o&&s&&(0,h.default)(s,e),this}Object.defineProperty(t,"__esModule",{value:!0});var a=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var r=arguments[t];for(var n in r)Object.prototype.hasOwnProperty.call(r,n)&&(e[n]=r[n])}return e},s=r(1),i=n(s),u=r(5),l=n(u),f=r(6),c=n(f),d=r(2),p=r(8),h=n(p),y="1.1.4";a(o,{defaults:d.defaults,version:y});try{window.jQuery.fn.sheetrock=o}catch(e){}t.default=o,e.exports=t.default},function(e,t,r){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function o(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&(t[r]=e[r]);return t.default=e,t}function a(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function s(e){var t={};return Object.keys(e).forEach(function(r){({}).hasOwnProperty.call(c.legacyOptions,r)?t[c.legacyOptions[r]]=e[r]:t[r]=e[r]}),t}function i(e){var t={};if(t.target=(0,d.extractElement)(e.target),t.fetchSize=Math.max(0,parseInt(e.fetchSize,10)||0),!t.target&&!e.callback&&!c.defaults.callback)throw new h.default("No element targeted or callback provided.");return l({},c.defaults,e,t)}function u(e,t){if(t)return{data:t};var r=null;if(Object.keys(c.sheetTypes).forEach(function(t){var n=c.sheetTypes[t];n.keyFormat.test(e.url)&&n.gidFormat.test(e.url)&&(r=n)}),r){var n=e.url.match(r.keyFormat)[1];return{key:n,gid:e.url.match(r.gidFormat)[1],apiEndpoint:r.apiEndpoint.replace("%key%",n)}}throw new h.default("No key/gid in the provided URL.")}Object.defineProperty(t,"__esModule",{value:!0});var l=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var r=arguments[t];for(var n in r)Object.prototype.hasOwnProperty.call(r,n)&&(e[n]=r[n])}return e},f=r(2),c=o(f),d=r(3),p=r(4),h=n(p),y=function e(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=arguments.length>1&&void 0!==arguments[1]&&arguments[1];a(this,e),this.user=i(s(t)),this.request=u(this.user,r),this.requestIndex=this.request.key+"_"+this.request.gid+"_"+this.user.query};t.default=y,e.exports=t.default},function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r={url:"",query:"",target:null,fetchSize:0,labels:[],rowTemplate:null,callback:null,reset:!1},n={sql:"query",resetStatus:"reset",chunkSize:"fetchSize",rowHandler:"rowTemplate"},o={2014:{apiEndpoint:"https://docs.google.com/spreadsheets/d/%key%/gviz/tq?",keyFormat:new RegExp("spreadsheets/d/([^/#]+)","i"),gidFormat:new RegExp("gid=([^/&#]+)","i")},2010:{apiEndpoint:"https://spreadsheets.google.com/tq?key=%key%&",keyFormat:new RegExp("key=([^&#]+)","i"),gidFormat:new RegExp("gid=([^/&#]+)","i")}};t.defaults=r,t.legacyOptions=n,t.sheetTypes=o},function(e,t){"use strict";function r(e){var t=e?e.f||e.v||e:"";return t instanceof Array&&(t=t.join("")),"object"===("undefined"==typeof t?"undefined":l(t))?"":(""+t).replace(/^\s+|\s+$/,"")}function n(e){var t=e;return"object"===("undefined"==typeof t?"undefined":l(t))&&t.jquery&&t.length&&(t=t[0]),t&&t.nodeType&&1===t.nodeType?t:null}function o(e,t){e&&e.insertAdjacentHTML&&e.insertAdjacentHTML("beforeEnd",t)}function a(e,t){var r=" "+e.className+" ";return r.indexOf(" "+t+" ")!==-1}function s(e){return e&&"TABLE"===e.tagName}function i(e,t){return"<"+t+">"+e+"</"+t+">"}function u(e){var t=e.num?"td":"th",r="";return Object.keys(e.cells).forEach(function(n){r+=i(e.cells[n],t)}),i(r,"tr")}Object.defineProperty(t,"__esModule",{value:!0});var l="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e};t.append=o,t.extractElement=n,t.getCellValue=r,t.hasClass=a,t.isTable=s,t.toHTML=u,t.wrapTag=i},function(e,t){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function n(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function o(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}Object.defineProperty(t,"__esModule",{value:!0});var a=function(e){function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",o=arguments.length>1&&void 0!==arguments[1]?arguments[1]:null;r(this,t);var a=n(this,(t.__proto__||Object.getPrototypeOf(t)).call(this));return a.name="SheetrockError",a.code=o,a.message=e,a}return o(t,e),t}(Error);t.default=a,e.exports=t.default},function(e,t,r){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var a=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var r=arguments[t];for(var n in r)Object.prototype.hasOwnProperty.call(r,n)&&(e[n]=r[n])}return e},s=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),i=r(4),u=n(i),l={defaults:{failed:!1,header:0,labels:null,loaded:!1,offset:0},store:{}},f=function(){function e(t){if(o(this,e),this.options=t,this.index=t.requestIndex,this.state.failed)throw new u.default("A previous request for this resource failed.");if(this.state.loaded)throw new u.default("No more rows to load!")}return s(e,[{key:"update",value:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};l.store[this.index]=a(this.state,e)}},{key:"state",get:function(){var e={}.hasOwnProperty.call(l.store,this.index),t=this.options.user.reset||this.options.request.data;if(!e||t){var r={labels:e?l.store[this.index].labels:null};l.store[this.index]=a({},l.defaults,r)}return l.store[this.index]}},{key:"url",get:function(){var e=this.options.user.fetchSize,t=e?" limit "+(e+1)+" offset "+this.state.offset:"",r=["gid="+encodeURIComponent(this.options.request.gid),"tq="+encodeURIComponent(this.options.user.query+t)];return this.options.request.apiEndpoint+r.join("&")}}]),e}();t.default=f,e.exports=t.default},function(e,t,r){"use strict";function n(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&(t[r]=e[r]);return t.default=e,t}function o(e){return e&&e.__esModule?e:{default:e}}function a(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var s=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),i=r(7),u=o(i),l=r(4),f=o(l),c=r(3),d=n(c),p=function(){function e(t){a(this,e),this.request=t,this.options=t.options}return s(e,[{key:"setAttributes",value:function(){var e=this.options.user.fetchSize,t=this.raw.table.rows,r=this.raw.table.cols,n={last:t.length-1,rowNumberOffset:this.request.state.header||0},o=this.request.state.labels;this.request.state.offset||(o=r.map(function(e,r){return e.label?e.label.replace(/\s/g,""):(n.last+=1,n.rowNumberOffset=1,d.getCellValue(t[0].c[r])||e.id)}),this.request.update({header:n.rowNumberOffset,labels:o,offset:this.request.state.offset+n.rowNumberOffset})),(!e||t.length-n.rowNumberOffset<e)&&(n.last+=1,this.request.update({loaded:!0}));var a=this.options.user.labels,s=a&&a.length===o.length;n.labels=s?a:o,this.attributes=n}},{key:"setOutput",value:function(){var e=this;this.rows=[],this.request.state.offset||this.attributes.rowNumberOffset||this.rows.push(new u.default(0,this.attributes.labels,this.attributes.labels)),this.raw.table.rows.forEach(function(t,r){if(t.c&&r<e.attributes.last){var n=e.request.state.offset+r+1-e.attributes.rowNumberOffset;e.rows.push(new u.default(n,t.c,e.attributes.labels))}}),this.request.update({offset:this.request.state.offset+this.options.user.fetchSize})}},{key:"setHTML",value:function(){var e=this.options.user.target,t=this.options.user.rowTemplate||d.toHTML,r=d.isTable(e),n=e&&d.hasClass(e,"sheetrock-header"),o="",a="";this.rows.forEach(function(e){e.num?a+=t(e):(r||n)&&(o+=t(e))}),r&&(o=d.wrapTag(o,"thead"),a=d.wrapTag(a,"tbody")),d.append(e,o+a),this.html=o+a}},{key:"loadData",value:function(e,t){this.raw=e;try{this.setAttributes(),this.setOutput()}catch(e){return void t(new f.default("Unexpected API response format."))}this.setHTML(),t(null)}}]),e}();t.default=p,e.exports=t.default},function(e,t,r){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(t,"__esModule",{value:!0});var o=function(){function e(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(t,r,n){return r&&e(t.prototype,r),n&&e(t,n),t}}(),a=r(3),s=function(){function e(t,r,o){n(this,e),this.num=t,this.cellsArray=r.map(a.getCellValue),this.labels=o}return o(e,[{key:"cells",get:function(){var e=this,t={};return this.labels.forEach(function(r,n){t[r]=e.cellsArray[n]}),t}}]),e}();t.default=s,e.exports=t.default},function(e,t,r){"use strict";function n(e){return e&&e.__esModule?e:{default:e}}function o(e,t){function r(){i.removeChild(a),delete window[l]}function n(n){r(),e.loadData(n,t)}function o(){r(),t(new s.default("Request failed."))}var a=window.document.createElement("script"),l="_sheetrock_callback_"+u;u+=1,window[l]=n,a.addEventListener&&(a.addEventListener("error",o,!1),a.addEventListener("abort",o,!1)),a.type="text/javascript",a.src=e.request.url+"&tqx=responseHandler:"+l,i.appendChild(a)}Object.defineProperty(t,"__esModule",{value:!0});var a=r(4),s=n(a),i=window.document.getElementsByTagName("head")[0],u=0;t.default=o,e.exports=t.default}])});
+	//# sourceMappingURL=sheetrock.min.js.map
+
+/***/ }),
+/* 415 */
+/***/ (function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _bootstrapTable = __webpack_require__(415);
+	var _bootstrapTable = __webpack_require__(416);
 
 	var _bootstrapTable2 = _interopRequireDefault(_bootstrapTable);
 
-	var _container = __webpack_require__(435);
+	var _container = __webpack_require__(436);
 
 	var _container2 = _interopRequireDefault(_container);
 
@@ -62373,7 +62628,7 @@
 	exports.default = (0, _container2.default)(_bootstrapTable2.default);
 
 /***/ }),
-/* 415 */
+/* 416 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62392,31 +62647,31 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _classnames = __webpack_require__(416);
+	var _classnames = __webpack_require__(417);
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _header = __webpack_require__(417);
+	var _header = __webpack_require__(418);
 
 	var _header2 = _interopRequireDefault(_header);
 
-	var _caption = __webpack_require__(424);
+	var _caption = __webpack_require__(425);
 
 	var _caption2 = _interopRequireDefault(_caption);
 
-	var _body = __webpack_require__(425);
+	var _body = __webpack_require__(426);
 
 	var _body2 = _interopRequireDefault(_body);
 
-	var _propsResolver = __webpack_require__(431);
+	var _propsResolver = __webpack_require__(432);
 
 	var _propsResolver2 = _interopRequireDefault(_propsResolver);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
-	var _selection = __webpack_require__(433);
+	var _selection = __webpack_require__(434);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -62602,7 +62857,7 @@
 	exports.default = BootstrapTable;
 
 /***/ }),
-/* 416 */
+/* 417 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -62656,7 +62911,7 @@
 
 
 /***/ }),
-/* 417 */
+/* 418 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62673,15 +62928,15 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
-	var _headerCell = __webpack_require__(419);
+	var _headerCell = __webpack_require__(420);
 
 	var _headerCell2 = _interopRequireDefault(_headerCell);
 
-	var _selectionHeaderCell = __webpack_require__(423);
+	var _selectionHeaderCell = __webpack_require__(424);
 
 	var _selectionHeaderCell2 = _interopRequireDefault(_selectionHeaderCell);
 
@@ -62739,7 +62994,7 @@
 	exports.default = Header;
 
 /***/ }),
-/* 418 */
+/* 419 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -62759,7 +63014,7 @@
 	};
 
 /***/ }),
-/* 419 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62775,7 +63030,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _classnames = __webpack_require__(416);
+	var _classnames = __webpack_require__(417);
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -62783,19 +63038,19 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
-	var _symbol = __webpack_require__(420);
+	var _symbol = __webpack_require__(421);
 
 	var _symbol2 = _interopRequireDefault(_symbol);
 
-	var _caret = __webpack_require__(421);
+	var _caret = __webpack_require__(422);
 
 	var _caret2 = _interopRequireDefault(_caret);
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
@@ -62920,7 +63175,7 @@
 	exports.default = HeaderCell;
 
 /***/ }),
-/* 420 */
+/* 421 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -62955,7 +63210,7 @@
 	exports.default = SortSymbol;
 
 /***/ }),
-/* 421 */
+/* 422 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62968,7 +63223,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _classnames = __webpack_require__(416);
+	var _classnames = __webpack_require__(417);
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
@@ -62976,7 +63231,7 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
@@ -63001,7 +63256,7 @@
 	exports.default = SortCaret;
 
 /***/ }),
-/* 422 */
+/* 423 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -63127,7 +63382,7 @@
 	};
 
 /***/ }),
-/* 423 */
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63149,7 +63404,7 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
@@ -63256,7 +63511,7 @@
 	exports.default = SelectionHeaderCell;
 
 /***/ }),
-/* 424 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63292,7 +63547,7 @@
 	exports.default = Caption;
 
 /***/ }),
-/* 425 */
+/* 426 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63312,23 +63567,23 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _classnames = __webpack_require__(416);
+	var _classnames = __webpack_require__(417);
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _row = __webpack_require__(426);
+	var _row = __webpack_require__(427);
 
 	var _row2 = _interopRequireDefault(_row);
 
-	var _rowSection = __webpack_require__(430);
+	var _rowSection = __webpack_require__(431);
 
 	var _rowSection2 = _interopRequireDefault(_rowSection);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
@@ -63422,7 +63677,7 @@
 	exports.default = Body;
 
 /***/ }),
-/* 426 */
+/* 427 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63443,23 +63698,23 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _cell = __webpack_require__(427);
+	var _cell = __webpack_require__(428);
 
 	var _cell2 = _interopRequireDefault(_cell);
 
-	var _selectionCell = __webpack_require__(428);
+	var _selectionCell = __webpack_require__(429);
 
 	var _selectionCell2 = _interopRequireDefault(_selectionCell);
 
-	var _rowEventDelegater = __webpack_require__(429);
+	var _rowEventDelegater = __webpack_require__(430);
 
 	var _rowEventDelegater2 = _interopRequireDefault(_rowEventDelegater);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
@@ -63593,7 +63848,7 @@
 	exports.default = Row;
 
 /***/ }),
-/* 427 */
+/* 428 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63614,7 +63869,7 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
@@ -63739,7 +63994,7 @@
 	exports.default = Cell;
 
 /***/ }),
-/* 428 */
+/* 429 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63758,7 +64013,7 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
@@ -63850,7 +64105,7 @@
 	exports.default = SelectionCell;
 
 /***/ }),
-/* 429 */
+/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63861,7 +64116,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
@@ -63976,7 +64231,7 @@
 	};
 
 /***/ }),
-/* 430 */
+/* 431 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64026,7 +64281,7 @@
 	exports.default = RowSection;
 
 /***/ }),
-/* 431 */
+/* 432 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64039,15 +64294,15 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _columnResolver = __webpack_require__(432);
+	var _columnResolver = __webpack_require__(433);
 
 	var _columnResolver2 = _interopRequireDefault(_columnResolver);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
@@ -64161,7 +64416,7 @@
 	};
 
 /***/ }),
-/* 432 */
+/* 433 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -64209,7 +64464,7 @@
 	};
 
 /***/ }),
-/* 433 */
+/* 434 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64219,11 +64474,11 @@
 	});
 	exports.getSelectedRows = exports.unSelectableKeys = exports.selectableKeys = exports.isAnySelectedRow = exports.isSelectedAll = undefined;
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _rows = __webpack_require__(434);
+	var _rows = __webpack_require__(435);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -64288,7 +64543,7 @@
 	};
 
 /***/ }),
-/* 434 */
+/* 435 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -64311,7 +64566,7 @@
 	};
 
 /***/ }),
-/* 435 */
+/* 436 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64328,23 +64583,23 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _store = __webpack_require__(436);
+	var _store = __webpack_require__(437);
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _wrapper = __webpack_require__(438);
+	var _wrapper = __webpack_require__(439);
 
 	var _wrapper2 = _interopRequireDefault(_wrapper);
 
-	var _wrapper3 = __webpack_require__(440);
+	var _wrapper3 = __webpack_require__(441);
 
 	var _wrapper4 = _interopRequireDefault(_wrapper3);
 
-	var _remoteResolver2 = __webpack_require__(439);
+	var _remoteResolver2 = __webpack_require__(440);
 
 	var _remoteResolver3 = _interopRequireDefault(_remoteResolver2);
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
@@ -64443,7 +64698,7 @@
 	exports.default = withDataStore;
 
 /***/ }),
-/* 436 */
+/* 437 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64455,13 +64710,13 @@
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint no-underscore-dangle: 0 */
 
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _sort = __webpack_require__(437);
+	var _sort = __webpack_require__(438);
 
-	var _rows = __webpack_require__(434);
+	var _rows = __webpack_require__(435);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -64600,7 +64855,7 @@
 	exports.default = Store;
 
 /***/ }),
-/* 437 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64610,11 +64865,11 @@
 	});
 	exports.nextOrder = exports.sort = undefined;
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
@@ -64677,7 +64932,7 @@
 	};
 
 /***/ }),
-/* 438 */
+/* 439 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64698,7 +64953,7 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _remoteResolver2 = __webpack_require__(439);
+	var _remoteResolver2 = __webpack_require__(440);
 
 	var _remoteResolver3 = _interopRequireDefault(_remoteResolver2);
 
@@ -64807,7 +65062,7 @@
 	};
 
 /***/ }),
-/* 439 */
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64820,7 +65075,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _utils = __webpack_require__(422);
+	var _utils = __webpack_require__(423);
 
 	var _utils2 = _interopRequireDefault(_utils);
 
@@ -64918,7 +65173,7 @@
 	};
 
 /***/ }),
-/* 440 */
+/* 441 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -64939,13 +65194,13 @@
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
-	var _const = __webpack_require__(418);
+	var _const = __webpack_require__(419);
 
 	var _const2 = _interopRequireDefault(_const);
 
-	var _selection = __webpack_require__(433);
+	var _selection = __webpack_require__(434);
 
-	var _rows = __webpack_require__(434);
+	var _rows = __webpack_require__(435);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -65086,10 +65341,10 @@
 	};
 
 /***/ }),
-/* 441 */
+/* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "0309f2e0de0c57a4ea8d828368cd9424.html";
+	module.exports = __webpack_require__.p + "1b2357035741e85edd9e85e0c444ac55.html";
 
 /***/ })
 /******/ ]);
