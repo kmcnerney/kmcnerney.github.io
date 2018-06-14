@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "753d954e2a307beb34d5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "081167f5163ebb7cc583"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61577,7 +61577,7 @@
 	}
 
 	function getPayoutForPositionNumber(payoutInfo, pos) {
-		return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9\.-]+/g, ''));
+		return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9.-]+/g, ''));
 	}
 
 	function getState() {
@@ -61617,9 +61617,19 @@
 
 					if (_lodash2.default.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
 						realTimeData[golferRow].buyer = buyer[5];
-						realTimeData[golferRow].odds = buyer[2];
+						realTimeData[golferRow].odds = buyer[2] + '/1';
 						realTimeData[golferRow].cost = buyer[6].replace(/\s/g, '');
 						realTimeData[golferRow].expected_value = buyer[7].replace(/\s/g, '');
+						break;
+					}
+
+					if (_lodash2.default.isEqual(buyerRow, 40)) {
+						// this golfer is in the field
+						realTimeData[golferRow].buyer = buyer[5];
+						realTimeData[golferRow].odds = 'FIELD';
+						realTimeData[golferRow].cost = '$' + _lodash2.default.parseInt(buyer[6].replace(/[^0-9.-]+/g, '')) / 40;
+						realTimeData[golferRow].expected_value = '$' + parseFloat(buyer[7].replace(/[^0-9.-]+/g, '')) / 40;
+						break;
 					}
 				}
 			}
@@ -62545,7 +62555,7 @@
 	var ajaxCalls = {
 		getCalcuttaResults: function getCalcuttaResults(fn) {
 			(0, _sheetrock2.default)({
-				url: 'https://docs.google.com/spreadsheets/d/1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM/edit#gid=0',
+				url: 'https://docs.google.com/spreadsheets/d/1HB5U2DLCvwz2tINmZoQbBQg42Irn55LaZ4G0vklxrCU/edit#gid=1000055250',
 				query: 'select A,B,C,D,E,F,G,H',
 				callback: function callback(error, options, response) {
 					if (!error) {
@@ -62559,7 +62569,7 @@
 		},
 		getPayoutInfo: function getPayoutInfo(fn) {
 			(0, _sheetrock2.default)({
-				url: 'https://docs.google.com/spreadsheets/d/1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM/edit#gid=0',
+				url: 'https://docs.google.com/spreadsheets/d/1HB5U2DLCvwz2tINmZoQbBQg42Irn55LaZ4G0vklxrCU/edit#gid=1000055250',
 				query: 'select J,K,L',
 				callback: function callback(error, options, response) {
 					if (!error) {
@@ -65344,7 +65354,7 @@
 /* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "1b2357035741e85edd9e85e0c444ac55.html";
+	module.exports = __webpack_require__.p + "16e553931da1616c7b581094899da763.html";
 
 /***/ })
 /******/ ]);

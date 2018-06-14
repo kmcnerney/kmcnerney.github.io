@@ -49,7 +49,7 @@ function getPayoutForPositionCurrency (payoutInfo, pos) {
 }
 
 function getPayoutForPositionNumber (payoutInfo, pos) {
-	return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9\.-]+/g, ''))
+	return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9.-]+/g, ''))
 }
 
 function getState () {
@@ -89,9 +89,19 @@ function getState () {
 
 				if (_.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
 					realTimeData[golferRow].buyer = buyer[5]
-					realTimeData[golferRow].odds = buyer[2]
+					realTimeData[golferRow].odds = buyer[2] + '/1'
 					realTimeData[golferRow].cost = buyer[6].replace(/\s/g, '')
 					realTimeData[golferRow].expected_value = buyer[7].replace(/\s/g, '')
+					break
+				}
+
+				if (_.isEqual(buyerRow, 40)) {
+					// this golfer is in the field
+					realTimeData[golferRow].buyer = buyer[5]
+					realTimeData[golferRow].odds = 'FIELD'
+					realTimeData[golferRow].cost = '$' + (_.parseInt(buyer[6].replace(/[^0-9.-]+/g, '')) / 40)
+					realTimeData[golferRow].expected_value = '$' + (parseFloat(buyer[7].replace(/[^0-9.-]+/g, '')) / 40)
+					break
 				}
 			}
 		}
