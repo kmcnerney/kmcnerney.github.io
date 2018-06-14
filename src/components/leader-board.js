@@ -122,11 +122,11 @@ function getState () {
 						for (let j = tieCount - 1; j >= 0; j--) {
 							let position = i - j
 							let thisPayout = getPayoutForPositionNumber(payoutInfo, position)
-							if (!_.isEqual(thisPayout, 1201)) {
+							if (position <= 10) {
 								totalPayout += thisPayout
 							}
 						}
-
+						
 						let finalPayout = totalPayout / tieCount
 						for (let j = tieCount - 1; j >= 0; j--) {
 							let position = i - 1 - j

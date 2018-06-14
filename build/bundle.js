@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "081167f5163ebb7cc583"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "c9ebccad7cc6c50c1188"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61650,7 +61650,7 @@
 							for (var j = tieCount - 1; j >= 0; j--) {
 								var position = i - j;
 								var thisPayout = getPayoutForPositionNumber(payoutInfo, position);
-								if (!_lodash2.default.isEqual(thisPayout, 1201)) {
+								if (position <= 10) {
 									totalPayout += thisPayout;
 								}
 							}
