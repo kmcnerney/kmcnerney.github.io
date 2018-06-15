@@ -39,7 +39,7 @@ const COLUMNS = [
 	},
 	{
 		dataField: 'buyer',
-		text: 'Buyer-Percentage'
+		text: 'Buyer'
 	},
 	{
 		dataField: 'odds',

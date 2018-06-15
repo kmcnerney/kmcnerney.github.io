@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "287b0ecb6fa81c70169e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e9f4ae9aaee2e32c2630"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61570,7 +61570,7 @@
 		text: ''
 	}, {
 		dataField: 'buyer',
-		text: 'Buyer-Percentage'
+		text: 'Buyer'
 	}, {
 		dataField: 'odds',
 		text: 'Odds'
