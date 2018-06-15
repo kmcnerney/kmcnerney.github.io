@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "2db67a6fc919292c3d99"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "287b0ecb6fa81c70169e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61546,7 +61546,14 @@
 	// Components
 
 
-	var columns = [{
+	var NUM_TO_PAYOUT = 10;
+	var CALCUTTA_DOC_INDICES = {
+		ODDS: 2,
+		BUYER: 5,
+		COST: 6,
+		EXPECTED_VAL: 7
+	};
+	var COLUMNS = [{
 		dataField: 'current_position',
 		text: 'Current Position'
 	}, {
@@ -61599,7 +61606,7 @@
 				var actualVal = '$0';
 				var currPosMatch = _lodash2.default.isEqual('T' + currPosition, golfer.current_position);
 
-				if (golfersPaid < 11 || currPosMatch) {
+				if (golfersPaid <= NUM_TO_PAYOUT || currPosMatch) {
 					if (!currPosMatch) {
 						currPosition = golfer.current_position.match(/\d+/)[0];
 					}
@@ -61622,19 +61629,19 @@
 					var buyer = calcuttaResults[buyerRow].cellsArray;
 
 					if (_lodash2.default.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
-						realTimeData[golferRow].buyer = buyer[5];
-						realTimeData[golferRow].odds = buyer[2] + '/1';
-						realTimeData[golferRow].cost = buyer[6].replace(/\s/g, '');
-						realTimeData[golferRow].expected_value = buyer[7].replace(/\s/g, '');
+						realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER];
+						realTimeData[golferRow].odds = buyer[CALCUTTA_DOC_INDICES.ODDS] + '/1';
+						realTimeData[golferRow].cost = buyer[CALCUTTA_DOC_INDICES.COST].replace(/\s/g, '');
+						realTimeData[golferRow].expected_value = buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/\s/g, '');
 						break;
 					}
 
 					if (_lodash2.default.isEqual(buyerRow, 40)) {
 						// this golfer is in the field
-						realTimeData[golferRow].buyer = buyer[5];
+						realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER];
 						realTimeData[golferRow].odds = 'FIELD';
-						realTimeData[golferRow].cost = '$' + _lodash2.default.parseInt(buyer[6].replace(/[^0-9.-]+/g, '')) / 40;
-						realTimeData[golferRow].expected_value = '$' + parseFloat(buyer[7].replace(/[^0-9.-]+/g, '')) / 40;
+						realTimeData[golferRow].cost = '$' + _lodash2.default.parseInt(buyer[CALCUTTA_DOC_INDICES.COST].replace(/[^0-9.-]+/g, '')) / 40;
+						realTimeData[golferRow].expected_value = '$' + parseFloat(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/[^0-9.-]+/g, '')) / 40;
 						break;
 					}
 				}
@@ -61656,7 +61663,7 @@
 							for (var j = tieCount - 1; j >= 0; j--) {
 								var position = i - j;
 								var thisPayout = getPayoutForPositionNumber(payoutInfo, position);
-								if (position <= 10) {
+								if (position <= NUM_TO_PAYOUT) {
 									totalPayout += thisPayout;
 								}
 							}
@@ -61713,7 +61720,7 @@
 				return _react2.default.createElement(_reactBootstrapTableNext2.default, {
 					keyField: 'leaderBoard',
 					data: this.state.realTimeData,
-					columns: columns
+					columns: COLUMNS
 				});
 			}
 		}, {

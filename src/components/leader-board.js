@@ -9,7 +9,14 @@ import GolfStore from '../stores/golf'
 // Components
 import BootstrapTable from 'react-bootstrap-table-next'
 
-const columns = [
+const NUM_TO_PAYOUT = 10
+const CALCUTTA_DOC_INDICES = {
+	ODDS: 2,
+	BUYER: 5,
+	COST: 6,
+	EXPECTED_VAL: 7
+}
+const COLUMNS = [
 	{
 		dataField: 'current_position',
 		text: 'Current Position'
@@ -73,7 +80,7 @@ function getState () {
 			let actualVal = '$0'
 			let currPosMatch = _.isEqual('T' + currPosition, golfer.current_position)
 
-			if (golfersPaid < 11 || currPosMatch) {
+			if (golfersPaid <= NUM_TO_PAYOUT || currPosMatch) {
 				if (!currPosMatch) {
 					currPosition = golfer.current_position.match(/\d+/)[0]
 				}
@@ -96,19 +103,19 @@ function getState () {
 				let buyer = calcuttaResults[buyerRow].cellsArray
 
 				if (_.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
-					realTimeData[golferRow].buyer = buyer[5]
-					realTimeData[golferRow].odds = buyer[2] + '/1'
-					realTimeData[golferRow].cost = buyer[6].replace(/\s/g, '')
-					realTimeData[golferRow].expected_value = buyer[7].replace(/\s/g, '')
+					realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
+					realTimeData[golferRow].odds = buyer[CALCUTTA_DOC_INDICES.ODDS] + '/1'
+					realTimeData[golferRow].cost = buyer[CALCUTTA_DOC_INDICES.COST].replace(/\s/g, '')
+					realTimeData[golferRow].expected_value = buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/\s/g, '')
 					break
 				}
 
 				if (_.isEqual(buyerRow, 40)) {
 					// this golfer is in the field
-					realTimeData[golferRow].buyer = buyer[5]
+					realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
 					realTimeData[golferRow].odds = 'FIELD'
-					realTimeData[golferRow].cost = '$' + (_.parseInt(buyer[6].replace(/[^0-9.-]+/g, '')) / 40)
-					realTimeData[golferRow].expected_value = '$' + (parseFloat(buyer[7].replace(/[^0-9.-]+/g, '')) / 40)
+					realTimeData[golferRow].cost = '$' + (_.parseInt(buyer[CALCUTTA_DOC_INDICES.COST].replace(/[^0-9.-]+/g, '')) / 40)
+					realTimeData[golferRow].expected_value = '$' + (parseFloat(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/[^0-9.-]+/g, '')) / 40)
 					break
 				}
 			}
@@ -130,11 +137,11 @@ function getState () {
 						for (let j = tieCount - 1; j >= 0; j--) {
 							let position = i - j
 							let thisPayout = getPayoutForPositionNumber(payoutInfo, position)
-							if (position <= 10) {
+							if (position <= NUM_TO_PAYOUT) {
 								totalPayout += thisPayout
 							}
 						}
-						
+
 						let finalPayout = totalPayout / tieCount
 						for (let j = tieCount - 1; j >= 0; j--) {
 							let position = i - 1 - j
@@ -179,7 +186,7 @@ export default class LeaderBoard extends React.Component {
 			<BootstrapTable
 				keyField="leaderBoard"
 				data={this.state.realTimeData}
-				columns={columns}
+				columns={COLUMNS}
 			/>
 		)
 	}
