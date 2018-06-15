@@ -15,6 +15,14 @@ const columns = [
 		text: 'Current Position'
 	},
 	{
+		dataField: 'today',
+		text: 'Today'
+	},
+	{
+		dataField: 'total',
+		text: 'Total'
+	},
+	{
 		dataField: 'player_bio.first_name',
 		text: 'Golfer'
 	},

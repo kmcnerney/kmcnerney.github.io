@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "396aa4bf07ce6b76c470"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "2db67a6fc919292c3d99"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61549,6 +61549,12 @@
 	var columns = [{
 		dataField: 'current_position',
 		text: 'Current Position'
+	}, {
+		dataField: 'today',
+		text: 'Today'
+	}, {
+		dataField: 'total',
+		text: 'Total'
 	}, {
 		dataField: 'player_bio.first_name',
 		text: 'Golfer'
