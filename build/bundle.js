@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e92fafe68a317adcc1d5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "852e865c8035249391ef"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61834,6 +61834,7 @@
 			}
 
 			_currentTournament = res;
+			_currentTournament.tid = '100';
 			return fn(err, res);
 		});
 	}
@@ -61861,7 +61862,7 @@
 			return _payoutInfo;
 		},
 		getCurrentTournament: function getCurrentTournament() {
-			return '100'; // _currentTournament
+			return _currentTournament;
 		},
 		getRealTimeData: function getRealTimeData() {
 			return _realTimeData;

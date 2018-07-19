@@ -54,6 +54,7 @@ function getCurrentTournament (fn) {
 		}
 
 		_currentTournament = res
+		_currentTournament.tid = '100'
 		return fn(err, res)
 	})
 }
@@ -83,7 +84,7 @@ const GolfStore = _.assign({
 	},
 
 	getCurrentTournament () {
-		return '100' // _currentTournament
+		return _currentTournament
 	},
 
 	getRealTimeData () {
