@@ -9,7 +9,8 @@ import GolfStore from '../stores/golf'
 // Components
 import BootstrapTable from 'react-bootstrap-table-next'
 
-const NUM_TO_PAYOUT = 10
+const NUM_GOLFERS_TO_PAY = 10
+const NUM_GOLFERS_AUCTIONED = 40
 const CALCUTTA_DOC_INDICES = {
 	ODDS: 2,
 	BUYER: 5,
@@ -67,6 +68,14 @@ function getPayoutForPositionNumber (payoutInfo, pos) {
 	return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9.-]+/g, ''))
 }
 
+function convertToNumber (numString) {
+	return numString.replace(/[^0-9.,]/g, '')
+}
+
+function convertToDollars (num) {
+	return '$' + _.round(num, 2).toFixed(2)
+}
+
 function getState () {
 	let calcuttaResults = GolfStore.getCalcuttaResults()
 	let payoutInfo = GolfStore.getPayoutInfo()
@@ -77,10 +86,10 @@ function getState () {
 		let golfersPaid = 0
 		for (let golferRow = 0; golferRow < realTimeData.length; golferRow++) {
 			let golfer = realTimeData[golferRow]
-			let actualVal = '$0'
+			let actualVal = convertToDollars(0)
 			let currPosMatch = _.isEqual('T' + currPosition, golfer.current_position)
 
-			if (golfersPaid <= NUM_TO_PAYOUT || currPosMatch) {
+			if (golfersPaid <= NUM_GOLFERS_TO_PAY || currPosMatch) {
 				if (!currPosMatch) {
 					currPosition = golfer.current_position.match(/\d+/)[0]
 				}
@@ -97,7 +106,7 @@ function getState () {
 				golfersPaid++
 			}
 
-			realTimeData[golferRow].actual_value = actualVal.replace(/\s/g, '')
+			realTimeData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')))
 
 			for (let buyerRow = 0; buyerRow < calcuttaResults.length; buyerRow++) {
 				let buyer = calcuttaResults[buyerRow].cellsArray
@@ -110,12 +119,13 @@ function getState () {
 					break
 				}
 
-				if (_.isEqual(buyerRow, 40)) {
+				if (_.isEqual(buyerRow, NUM_GOLFERS_AUCTIONED)) {
+					const numFieldGolfers = realTimeData.length - NUM_GOLFERS_AUCTIONED
 					// this golfer is in the field
 					realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
 					realTimeData[golferRow].odds = 'FIELD'
-					realTimeData[golferRow].cost = '$' + (_.parseInt(buyer[CALCUTTA_DOC_INDICES.COST].replace(/[^0-9.-]+/g, '')) / 40)
-					realTimeData[golferRow].expected_value = '$' + (parseFloat(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/[^0-9.-]+/g, '')) / 40)
+					realTimeData[golferRow].cost = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.COST]) / numFieldGolfers)
+					realTimeData[golferRow].expected_value = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL]) / numFieldGolfers)
 					break
 				}
 			}
@@ -137,7 +147,7 @@ function getState () {
 						for (let j = tieCount - 1; j >= 0; j--) {
 							let position = i - j
 							let thisPayout = getPayoutForPositionNumber(payoutInfo, position)
-							if (position <= NUM_TO_PAYOUT) {
+							if (position <= NUM_GOLFERS_TO_PAY) {
 								totalPayout += thisPayout
 							}
 						}
@@ -151,7 +161,7 @@ function getState () {
 						timeToSplitPayout = false
 					}
 				}
-				currVal = realTimeData[i].actual_value
+				currVal = convertToDollars(realTimeData[i].actual_value)
 			}
 		}
 	}
