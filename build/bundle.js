@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "852e865c8035249391ef"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "57b3bc5649d03c09d3b7"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61834,7 +61834,6 @@
 			}
 
 			_currentTournament = res;
-			_currentTournament.tid = '100';
 			return fn(err, res);
 		});
 	}
@@ -61844,7 +61843,7 @@
 			return fn('Waiting for tournament ID...');
 		}
 
-		_golf2.default.getRealTimeData(_currentTournament.tid, function (err, res) {
+		_golf2.default.getRealTimeData('100', function (err, res) {
 			if (err) {
 				return fn(err);
 			}
