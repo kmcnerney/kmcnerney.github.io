@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "e9f4ae9aaee2e32c2630"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "b2c858e9a8566e34e3d5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -62568,7 +62568,7 @@
 	var ajaxCalls = {
 		getCalcuttaResults: function getCalcuttaResults(fn) {
 			(0, _sheetrock2.default)({
-				url: 'https://docs.google.com/spreadsheets/d/1HB5U2DLCvwz2tINmZoQbBQg42Irn55LaZ4G0vklxrCU/edit#gid=1000055250',
+				url: 'https://docs.google.com/spreadsheets/d/1X5Elh04sDP6rXm72w9z7u1P5MSNVqRcGctrGHnr7mfQ/edit#gid=1000055250',
 				query: 'select A,B,C,D,E,F,G,H',
 				callback: function callback(error, options, response) {
 					if (!error) {
@@ -62582,7 +62582,7 @@
 		},
 		getPayoutInfo: function getPayoutInfo(fn) {
 			(0, _sheetrock2.default)({
-				url: 'https://docs.google.com/spreadsheets/d/1HB5U2DLCvwz2tINmZoQbBQg42Irn55LaZ4G0vklxrCU/edit#gid=1000055250',
+				url: 'https://docs.google.com/spreadsheets/d/1X5Elh04sDP6rXm72w9z7u1P5MSNVqRcGctrGHnr7mfQ/edit#gid=1000055250',
 				query: 'select J,K,L',
 				callback: function callback(error, options, response) {
 					if (!error) {

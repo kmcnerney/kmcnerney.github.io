@@ -43,7 +43,7 @@ import sheetrock from 'sheetrock'
 const ajaxCalls = {
 	getCalcuttaResults (fn) {
 		sheetrock({
-			url: 'https://docs.google.com/spreadsheets/d/1HB5U2DLCvwz2tINmZoQbBQg42Irn55LaZ4G0vklxrCU/edit#gid=1000055250',
+			url: 'https://docs.google.com/spreadsheets/d/1X5Elh04sDP6rXm72w9z7u1P5MSNVqRcGctrGHnr7mfQ/edit#gid=1000055250',
 			query: 'select A,B,C,D,E,F,G,H',
 			callback: function (error, options, response) {
 				if (!error) {
@@ -58,7 +58,7 @@ const ajaxCalls = {
 
 	getPayoutInfo (fn) {
 		sheetrock({
-			url: 'https://docs.google.com/spreadsheets/d/1HB5U2DLCvwz2tINmZoQbBQg42Irn55LaZ4G0vklxrCU/edit#gid=1000055250',
+			url: 'https://docs.google.com/spreadsheets/d/1X5Elh04sDP6rXm72w9z7u1P5MSNVqRcGctrGHnr7mfQ/edit#gid=1000055250',
 			query: 'select J,K,L',
 			callback: function (error, options, response) {
 				if (!error) {
