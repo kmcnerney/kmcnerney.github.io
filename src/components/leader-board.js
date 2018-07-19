@@ -159,7 +159,7 @@ function getState () {
 	return {
 		calcuttaResults,
 		payoutInfo,
-		tournament: GolfStore.getCurrentTournament(),
+		tournament: '100', // GolfStore.getCurrentTournament(),
 		realTimeData
 	}
 }

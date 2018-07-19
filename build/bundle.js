@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b2c858e9a8566e34e3d5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "aa3a66c47d0e14c51849"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61685,7 +61685,7 @@
 		return {
 			calcuttaResults: calcuttaResults,
 			payoutInfo: payoutInfo,
-			tournament: _golf2.default.getCurrentTournament(),
+			tournament: '100', // GolfStore.getCurrentTournament(),
 			realTimeData: realTimeData
 		};
 	}
