@@ -83,7 +83,7 @@ const GolfStore = _.assign({
 	},
 
 	getCurrentTournament () {
-		return _currentTournament
+		return '100' // _currentTournament
 	},
 
 	getRealTimeData () {

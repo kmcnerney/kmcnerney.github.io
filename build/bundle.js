@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "aa3a66c47d0e14c51849"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "e92fafe68a317adcc1d5"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61546,7 +61546,8 @@
 	// Components
 
 
-	var NUM_TO_PAYOUT = 10;
+	var NUM_GOLFERS_TO_PAY = 10;
+	var NUM_GOLFERS_AUCTIONED = 40;
 	var CALCUTTA_DOC_INDICES = {
 		ODDS: 2,
 		BUYER: 5,
@@ -61593,20 +61594,29 @@
 		return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9.-]+/g, ''));
 	}
 
+	function convertToNumber(numString) {
+		return numString.replace(/[^0-9.,]/g, '');
+	}
+
+	function convertToDollars(num) {
+		return '$' + _lodash2.default.round(num, 2).toFixed(2);
+	}
+
 	function getState() {
 		var calcuttaResults = _golf2.default.getCalcuttaResults();
 		var payoutInfo = _golf2.default.getPayoutInfo();
 		var realTimeData = _golf2.default.getRealTimeData() ? _golf2.default.getRealTimeData().leaderboard.players : [];
+		var numFieldGolfers = realTimeData.length - NUM_GOLFERS_AUCTIONED;
 
 		if (calcuttaResults && payoutInfo) {
 			var currPosition = 1;
 			var golfersPaid = 0;
 			for (var golferRow = 0; golferRow < realTimeData.length; golferRow++) {
 				var golfer = realTimeData[golferRow];
-				var actualVal = '$0';
+				var actualVal = convertToDollars(0);
 				var currPosMatch = _lodash2.default.isEqual('T' + currPosition, golfer.current_position);
 
-				if (golfersPaid <= NUM_TO_PAYOUT || currPosMatch) {
+				if (golfersPaid <= NUM_GOLFERS_TO_PAY || currPosMatch) {
 					if (!currPosMatch) {
 						currPosition = golfer.current_position.match(/\d+/)[0];
 					}
@@ -61623,7 +61633,7 @@
 					golfersPaid++;
 				}
 
-				realTimeData[golferRow].actual_value = actualVal.replace(/\s/g, '');
+				realTimeData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')));
 
 				for (var buyerRow = 0; buyerRow < calcuttaResults.length; buyerRow++) {
 					var buyer = calcuttaResults[buyerRow].cellsArray;
@@ -61636,12 +61646,12 @@
 						break;
 					}
 
-					if (_lodash2.default.isEqual(buyerRow, 40)) {
+					if (_lodash2.default.isEqual(buyerRow, NUM_GOLFERS_AUCTIONED)) {
 						// this golfer is in the field
 						realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER];
 						realTimeData[golferRow].odds = 'FIELD';
-						realTimeData[golferRow].cost = '$' + _lodash2.default.parseInt(buyer[CALCUTTA_DOC_INDICES.COST].replace(/[^0-9.-]+/g, '')) / 40;
-						realTimeData[golferRow].expected_value = '$' + parseFloat(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/[^0-9.-]+/g, '')) / 40;
+						realTimeData[golferRow].cost = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.COST]) / numFieldGolfers);
+						realTimeData[golferRow].expected_value = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL]) / numFieldGolfers);
 						break;
 					}
 				}
@@ -61663,7 +61673,7 @@
 							for (var j = tieCount - 1; j >= 0; j--) {
 								var position = i - j;
 								var thisPayout = getPayoutForPositionNumber(payoutInfo, position);
-								if (position <= NUM_TO_PAYOUT) {
+								if (position <= NUM_GOLFERS_TO_PAY) {
 									totalPayout += thisPayout;
 								}
 							}
@@ -61677,7 +61687,7 @@
 							timeToSplitPayout = false;
 						}
 					}
-					currVal = realTimeData[i].actual_value;
+					currVal = convertToDollars(realTimeData[i].actual_value);
 				}
 			}
 		}
@@ -61685,7 +61695,7 @@
 		return {
 			calcuttaResults: calcuttaResults,
 			payoutInfo: payoutInfo,
-			tournament: '100', // GolfStore.getCurrentTournament(),
+			tournament: _golf2.default.getCurrentTournament(),
 			realTimeData: realTimeData
 		};
 	}
@@ -61851,7 +61861,7 @@
 			return _payoutInfo;
 		},
 		getCurrentTournament: function getCurrentTournament() {
-			return _currentTournament;
+			return '100'; // _currentTournament
 		},
 		getRealTimeData: function getRealTimeData() {
 			return _realTimeData;
