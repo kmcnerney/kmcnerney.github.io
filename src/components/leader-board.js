@@ -10,7 +10,7 @@ import GolfStore from '../stores/golf'
 import BootstrapTable from 'react-bootstrap-table-next'
 
 const NUM_GOLFERS_TO_PAY = 10
-const NUM_GOLFERS_AUCTIONED = 40
+const NUM_GOLFERS_AUCTIONED = 42
 const CALCUTTA_DOC_INDICES = {
 	ODDS: 2,
 	BUYER: 5,
