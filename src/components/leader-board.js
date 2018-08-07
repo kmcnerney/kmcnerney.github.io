@@ -147,9 +147,6 @@ function getState () {
 
 				let tieCount = j
 				while (j > 0) {
-					console.log('tieCount ' + tieCount)
-					console.log('groupedPayout ' + groupedPayout)
-					console.log('finalPayout ' + groupedPayout / tieCount)
 					realTimeData[i + j - 1].actual_value = convertToDollars(groupedPayout / tieCount)
 					j--
 				}
