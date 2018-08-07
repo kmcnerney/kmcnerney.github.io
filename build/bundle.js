@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "196de23ad60cc0e8aa18"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a43a619da8c7a227b490"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61673,9 +61673,6 @@
 
 					var tieCount = j;
 					while (j > 0) {
-						console.log('tieCount ' + tieCount);
-						console.log('groupedPayout ' + groupedPayout);
-						console.log('finalPayout ' + groupedPayout / tieCount);
 						realTimeData[i + j - 1].actual_value = convertToDollars(groupedPayout / tieCount);
 						j--;
 					}
