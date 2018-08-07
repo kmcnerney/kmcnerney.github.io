@@ -161,7 +161,7 @@ function getState () {
 						timeToSplitPayout = false
 					}
 				}
-				currVal = convertToDollars(realTimeData[i].actual_value)
+				currVal = realTimeData[i].actual_value
 			}
 		}
 	}
