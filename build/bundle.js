@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "0d719248550e23b84b08"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "cf2b2b709206bcacdd23"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61547,7 +61547,7 @@
 
 
 	var NUM_GOLFERS_TO_PAY = 10;
-	var NUM_GOLFERS_AUCTIONED = 40;
+	var NUM_GOLFERS_AUCTIONED = 42;
 	var CALCUTTA_DOC_INDICES = {
 		ODDS: 2,
 		BUYER: 5,
