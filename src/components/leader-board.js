@@ -90,19 +90,20 @@ function getState () {
 			let actualVal = convertToDollars(0)
 			let currPosMatch = _.isEqual('T' + currPosition, golfer.current_position)
 
+			if (_.isEmpty(golfer.current_position)) {
+				golfer.current_position = 'T1'
+			}
+
+			if (_.isEmpty(golfer.today)) {
+				golfer.today = 0
+			}
+
 			if (golfersPaid <= NUM_GOLFERS_TO_PAY || currPosMatch) {
 				if (!currPosMatch) {
 					currPosition = golfer.current_position.match(/\d+/)[0]
 				}
 
-				if (_.isEqual('' + currPosition, golfer.current_position)) {
-					// actualVal = the payout for this position
-					actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition)
-					currPosition++
-				} else if (_.isEqual('T' + currPosition, golfer.current_position)) {
-					// actualVal = the payout for this position + the payout for how many tied / how many tied
-					actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition)
-				}
+				actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition)
 
 				golfersPaid++
 			}
@@ -155,7 +156,7 @@ function getState () {
 						let finalPayout = totalPayout / tieCount
 						for (let j = tieCount - 1; j >= 0; j--) {
 							let position = i - 1 - j
-							realTimeData[position].actual_value = '$' + finalPayout
+							realTimeData[position].actual_value = convertToDollars(finalPayout)
 						}
 						tieCount = 1
 						timeToSplitPayout = false

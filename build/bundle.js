@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a5be8d7ef9b194105ec0"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "0d719248550e23b84b08"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61616,19 +61616,20 @@
 				var actualVal = convertToDollars(0);
 				var currPosMatch = _lodash2.default.isEqual('T' + currPosition, golfer.current_position);
 
+				if (_lodash2.default.isEmpty(golfer.current_position)) {
+					golfer.current_position = 'T1';
+				}
+
+				if (_lodash2.default.isEmpty(golfer.today)) {
+					golfer.today = 0;
+				}
+
 				if (golfersPaid <= NUM_GOLFERS_TO_PAY || currPosMatch) {
 					if (!currPosMatch) {
 						currPosition = golfer.current_position.match(/\d+/)[0];
 					}
 
-					if (_lodash2.default.isEqual('' + currPosition, golfer.current_position)) {
-						// actualVal = the payout for this position
-						actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition);
-						currPosition++;
-					} else if (_lodash2.default.isEqual('T' + currPosition, golfer.current_position)) {
-						// actualVal = the payout for this position + the payout for how many tied / how many tied
-						actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition);
-					}
+					actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition);
 
 					golfersPaid++;
 				}
@@ -61681,7 +61682,7 @@
 							var finalPayout = totalPayout / tieCount;
 							for (var _j = tieCount - 1; _j >= 0; _j--) {
 								var _position = i - 1 - _j;
-								realTimeData[_position].actual_value = '$' + finalPayout;
+								realTimeData[_position].actual_value = convertToDollars(finalPayout);
 							}
 							tieCount = 1;
 							timeToSplitPayout = false;
@@ -61843,7 +61844,7 @@
 			return fn('Waiting for tournament ID...');
 		}
 
-		_golf2.default.getRealTimeData('100', function (err, res) {
+		_golf2.default.getRealTimeData(_currentTournament.tid, function (err, res) {
 			if (err) {
 				return fn(err);
 			}
@@ -62538,47 +62539,12 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// import gapi from 'gapi-client'
-	// Client ID and API key from the Developer Console
-	// var CLIENT_ID = '347297161830-3qbe3nldcr8ef6e1r6fkqsn458kddobn.apps.googleusercontent.com';
-	// var API_KEY = 'AIzaSyCBGWPwzJQnwQnE_-YXHcwc5oVkhuz0o3M';
-
-	// // Array of API discovery doc URLs for APIs used by the quickstart
-	// var DISCOVERY_DOCS = ['https://sheets.googleapis.com/$discovery/rest?version=v4'];
-
-	// // Authorization scopes required by the API; multiple scopes can be
-	// // included, separated by spaces.
-	// var SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
-
-	// function start() {
-	//   // 2. Initialize the JavaScript client library.
-	//   gapi.client.init({
-	//     'apiKey': API_KEY,
-	//     // Your API key will be automatically added to the Discovery Document URLs.
-	//     'discoveryDocs': DISCOVERY_DOCS,
-	//     // clientId and scope are optional if auth is not required.
-	//     'clientId': CLIENT_ID,
-	//     'scope': SCOPES,
-	//   }).then(function() {
-	//     // 3. Initialize and make the API request.
-	//     return gapi.client.sheets.spreadsheets.values.get({
-	//           spreadsheetId: '1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM',
-	//           range: 'A2:H81',
-	//         })
-	//   }).then(function(response) {
-	//   	console.log('Calcutta Results:')
-	//     console.log(response);
-	//   }, function(reason) {
-	//     console.log('Error: ' + reason.result.error.message);
-	//   });
-	// };
-	// // 1. Load the JavaScript client library.
-	// gapi.load('client', start);
+	var gDoc = 'https://docs.google.com/spreadsheets/d/1JIoQ7AIWbVXg7NI2Si_TwS8ZWwCYfIY563qohHxHF2Q/edit#gid=1000055250';
 
 	var ajaxCalls = {
 		getCalcuttaResults: function getCalcuttaResults(fn) {
 			(0, _sheetrock2.default)({
-				url: 'https://docs.google.com/spreadsheets/d/1X5Elh04sDP6rXm72w9z7u1P5MSNVqRcGctrGHnr7mfQ/edit#gid=1000055250',
+				url: gDoc,
 				query: 'select A,B,C,D,E,F,G,H',
 				callback: function callback(error, options, response) {
 					if (!error) {
@@ -62592,7 +62558,7 @@
 		},
 		getPayoutInfo: function getPayoutInfo(fn) {
 			(0, _sheetrock2.default)({
-				url: 'https://docs.google.com/spreadsheets/d/1X5Elh04sDP6rXm72w9z7u1P5MSNVqRcGctrGHnr7mfQ/edit#gid=1000055250',
+				url: gDoc,
 				query: 'select J,K,L',
 				callback: function callback(error, options, response) {
 					if (!error) {
