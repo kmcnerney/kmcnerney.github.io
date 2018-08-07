@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "57b3bc5649d03c09d3b7"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a5be8d7ef9b194105ec0"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61687,7 +61687,7 @@
 							timeToSplitPayout = false;
 						}
 					}
-					currVal = convertToDollars(realTimeData[i].actual_value);
+					currVal = realTimeData[i].actual_value;
 				}
 			}
 		}
