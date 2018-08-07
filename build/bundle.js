@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "cf2b2b709206bcacdd23"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "196de23ad60cc0e8aa18"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61591,6 +61591,9 @@
 	}
 
 	function getPayoutForPositionNumber(payoutInfo, pos) {
+		if (pos > NUM_GOLFERS_TO_PAY) {
+			return 0;
+		}
 		return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9.-]+/g, ''));
 	}
 
@@ -61614,29 +61617,24 @@
 			for (var golferRow = 0; golferRow < realTimeData.length; golferRow++) {
 				var golfer = realTimeData[golferRow];
 				var actualVal = convertToDollars(0);
-				var currPosMatch = _lodash2.default.isEqual('T' + currPosition, golfer.current_position);
 
+				// setting a complete tie for first place before the tournament has started
 				if (_lodash2.default.isEmpty(golfer.current_position)) {
 					golfer.current_position = 'T1';
 				}
-
 				if (_lodash2.default.isEmpty(golfer.today)) {
 					golfer.today = 0;
 				}
 
-				if (golfersPaid <= NUM_GOLFERS_TO_PAY || currPosMatch) {
-					if (!currPosMatch) {
-						currPosition = golfer.current_position.match(/\d+/)[0];
-					}
-
+				if (golfersPaid <= NUM_GOLFERS_TO_PAY || _lodash2.default.isEqual('T' + currPosition, golfer.current_position)) {
+					currPosition = golfer.current_position.match(/\d+/)[0];
 					actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition);
-
 					golfersPaid++;
 				}
 
 				realTimeData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')));
 
-				for (var buyerRow = 0; buyerRow < calcuttaResults.length; buyerRow++) {
+				for (var buyerRow = 0; buyerRow <= NUM_GOLFERS_AUCTIONED; buyerRow++) {
 					var buyer = calcuttaResults[buyerRow].cellsArray;
 
 					if (_lodash2.default.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
@@ -61660,35 +61658,28 @@
 
 			// go back through the data to split tied payouts
 			if (realTimeData.length > 0) {
-				var currVal = realTimeData[0].actual_value;
-				var tieCount = 1;
-				var timeToSplitPayout = false;
-
-				for (var i = 1; i <= golfersPaid; i++) {
-					if (_lodash2.default.isEqual(realTimeData[i].actual_value, currVal)) {
-						timeToSplitPayout = true;
-						tieCount++;
-					} else if (timeToSplitPayout) {
-						if (i > 0) {
-							var totalPayout = 0;
-							for (var j = tieCount - 1; j >= 0; j--) {
-								var position = i - j;
-								var thisPayout = getPayoutForPositionNumber(payoutInfo, position);
-								if (position <= NUM_GOLFERS_TO_PAY) {
-									totalPayout += thisPayout;
-								}
-							}
-
-							var finalPayout = totalPayout / tieCount;
-							for (var _j = tieCount - 1; _j >= 0; _j--) {
-								var _position = i - 1 - _j;
-								realTimeData[_position].actual_value = convertToDollars(finalPayout);
-							}
-							tieCount = 1;
-							timeToSplitPayout = false;
+				var i = 0;
+				while (i < golfersPaid - 1) {
+					var j = 1;
+					var groupedPayout = getPayoutForPositionNumber(payoutInfo, i + 1);
+					while (_lodash2.default.isEqual(realTimeData[i].actual_value, realTimeData[i + j].actual_value)) {
+						if (_lodash2.default.isEqual(golfersPaid - 1, i + j)) {
+							j++;
+							break;
 						}
+						groupedPayout += getPayoutForPositionNumber(payoutInfo, i + j + 1);
+						j++;
 					}
-					currVal = realTimeData[i].actual_value;
+
+					var tieCount = j;
+					while (j > 0) {
+						console.log('tieCount ' + tieCount);
+						console.log('groupedPayout ' + groupedPayout);
+						console.log('finalPayout ' + groupedPayout / tieCount);
+						realTimeData[i + j - 1].actual_value = convertToDollars(groupedPayout / tieCount);
+						j--;
+					}
+					i += tieCount;
 				}
 			}
 		}

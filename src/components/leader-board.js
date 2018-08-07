@@ -65,6 +65,9 @@ function getPayoutForPositionCurrency (payoutInfo, pos) {
 }
 
 function getPayoutForPositionNumber (payoutInfo, pos) {
+	if (pos > NUM_GOLFERS_TO_PAY) {
+		return 0
+	}
 	return Number(getPayoutForPositionCurrency(payoutInfo, pos).replace(/[^0-9.-]+/g, ''))
 }
 
@@ -88,29 +91,24 @@ function getState () {
 		for (let golferRow = 0; golferRow < realTimeData.length; golferRow++) {
 			let golfer = realTimeData[golferRow]
 			let actualVal = convertToDollars(0)
-			let currPosMatch = _.isEqual('T' + currPosition, golfer.current_position)
 
+			// setting a complete tie for first place before the tournament has started
 			if (_.isEmpty(golfer.current_position)) {
 				golfer.current_position = 'T1'
 			}
-
 			if (_.isEmpty(golfer.today)) {
 				golfer.today = 0
 			}
 
-			if (golfersPaid <= NUM_GOLFERS_TO_PAY || currPosMatch) {
-				if (!currPosMatch) {
-					currPosition = golfer.current_position.match(/\d+/)[0]
-				}
-
+			if (golfersPaid <= NUM_GOLFERS_TO_PAY || _.isEqual('T' + currPosition, golfer.current_position)) {
+				currPosition = golfer.current_position.match(/\d+/)[0]
 				actualVal = getPayoutForPositionCurrency(payoutInfo, currPosition)
-
 				golfersPaid++
 			}
 
 			realTimeData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')))
 
-			for (let buyerRow = 0; buyerRow < calcuttaResults.length; buyerRow++) {
+			for (let buyerRow = 0; buyerRow <= NUM_GOLFERS_AUCTIONED; buyerRow++) {
 				let buyer = calcuttaResults[buyerRow].cellsArray
 
 				if (_.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
@@ -134,35 +132,28 @@ function getState () {
 
 		// go back through the data to split tied payouts
 		if (realTimeData.length > 0) {
-			let currVal = realTimeData[0].actual_value
-			let tieCount = 1
-			let timeToSplitPayout = false
-
-			for (let i = 1; i <= golfersPaid; i++) {
-				if (_.isEqual(realTimeData[i].actual_value, currVal)) {
-					timeToSplitPayout = true
-					tieCount++
-				} else if (timeToSplitPayout) {
-					if (i > 0) {
-						let totalPayout = 0
-						for (let j = tieCount - 1; j >= 0; j--) {
-							let position = i - j
-							let thisPayout = getPayoutForPositionNumber(payoutInfo, position)
-							if (position <= NUM_GOLFERS_TO_PAY) {
-								totalPayout += thisPayout
-							}
-						}
-
-						let finalPayout = totalPayout / tieCount
-						for (let j = tieCount - 1; j >= 0; j--) {
-							let position = i - 1 - j
-							realTimeData[position].actual_value = convertToDollars(finalPayout)
-						}
-						tieCount = 1
-						timeToSplitPayout = false
+			let i = 0
+			while (i < golfersPaid - 1) {
+				let j = 1
+				let groupedPayout = getPayoutForPositionNumber(payoutInfo, i + 1)
+				while (_.isEqual(realTimeData[i].actual_value, realTimeData[i + j].actual_value)) {
+					if (_.isEqual(golfersPaid - 1, i + j)) {
+						j++
+						break
 					}
+					groupedPayout += getPayoutForPositionNumber(payoutInfo, i + j + 1)
+					j++
 				}
-				currVal = realTimeData[i].actual_value
+
+				let tieCount = j
+				while (j > 0) {
+					console.log('tieCount ' + tieCount)
+					console.log('groupedPayout ' + groupedPayout)
+					console.log('finalPayout ' + groupedPayout / tieCount)
+					realTimeData[i + j - 1].actual_value = convertToDollars(groupedPayout / tieCount)
+					j--
+				}
+				i += tieCount
 			}
 		}
 	}
