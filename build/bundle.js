@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a43a619da8c7a227b490"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "1b9fd937c6c0712c8a7c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61622,7 +61622,7 @@
 				if (_lodash2.default.isEmpty(golfer.current_position)) {
 					golfer.current_position = 'T1';
 				}
-				if (_lodash2.default.isEmpty(golfer.today)) {
+				if (!golfer.today) {
 					golfer.today = 0;
 				}
 

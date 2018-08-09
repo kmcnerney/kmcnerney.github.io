@@ -96,7 +96,7 @@ function getState () {
 			if (_.isEmpty(golfer.current_position)) {
 				golfer.current_position = 'T1'
 			}
-			if (_.isEmpty(golfer.today)) {
+			if (!golfer.today) {
 				golfer.today = 0
 			}
 
