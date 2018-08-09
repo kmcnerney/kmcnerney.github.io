@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "1b9fd937c6c0712c8a7c"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "00b8ae447db996a7cfdb"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61556,7 +61556,7 @@
 	};
 	var COLUMNS = [{
 		dataField: 'current_position',
-		text: 'Current Position'
+		text: 'Position'
 	}, {
 		dataField: 'today',
 		text: 'Today'

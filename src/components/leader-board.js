@@ -20,7 +20,7 @@ const CALCUTTA_DOC_INDICES = {
 const COLUMNS = [
 	{
 		dataField: 'current_position',
-		text: 'Current Position'
+		text: 'Position'
 	},
 	{
 		dataField: 'today',
