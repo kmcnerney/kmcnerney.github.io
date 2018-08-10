@@ -96,9 +96,6 @@ function getState () {
 			if (_.isEmpty(golfer.current_position)) {
 				golfer.current_position = 'T1'
 			}
-			if (!golfer.today) {
-				golfer.today = 0
-			}
 
 			if (golfersPaid <= NUM_GOLFERS_TO_PAY || _.isEqual('T' + currPosition, golfer.current_position)) {
 				currPosition = golfer.current_position.match(/\d+/)[0]

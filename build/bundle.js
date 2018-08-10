@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "00b8ae447db996a7cfdb"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "3884c06eb6f55f6a9dbb"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -61621,9 +61621,6 @@
 				// setting a complete tie for first place before the tournament has started
 				if (_lodash2.default.isEmpty(golfer.current_position)) {
 					golfer.current_position = 'T1';
-				}
-				if (!golfer.today) {
-					golfer.today = 0;
 				}
 
 				if (golfersPaid <= NUM_GOLFERS_TO_PAY || _lodash2.default.isEqual('T' + currPosition, golfer.current_position)) {
