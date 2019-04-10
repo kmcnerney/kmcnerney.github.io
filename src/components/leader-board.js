@@ -160,8 +160,6 @@ function getState () {
 		}
 	}
 
-	console.log('returning data')
-	console.log(tableData)
 	return {
 		tableData
 	}
@@ -183,8 +181,6 @@ export default class LeaderBoard extends React.Component {
 	}
 
 	render () {
-		console.log('displaying data')
-		console.log(this.state.tableData)
 		return (
 			<BootstrapTable
 				keyField="player_id"
@@ -195,7 +191,6 @@ export default class LeaderBoard extends React.Component {
 	}
 
 	_onChange () {
-		console.log('on change')
 		this.setState(getState())
 	}
 }
