@@ -82,14 +82,21 @@ function convertToDollars (num) {
 function getState () {
 	const calcuttaResults = GolfStore.getCalcuttaResults()
 	const payoutInfo = GolfStore.getPayoutInfo()
-	const realTimeData = GolfStore.getRealTimeData() ? GolfStore.getRealTimeData().leaderboard.players : []
-	const numFieldGolfers = realTimeData.length - NUM_GOLFERS_AUCTIONED
+	const realTimeData = GolfStore.getRealTimeData()
 
-	if (calcuttaResults && payoutInfo) {
+	const tableData = []
+
+	if (calcuttaResults && payoutInfo && realTimeData) {
+		tableData.push()
 		let currPosition = 1
 		let golfersPaid = 0
-		for (let golferRow = 0; golferRow < realTimeData.length; golferRow++) {
-			let golfer = realTimeData[golferRow]
+		const golferData = realTimeData.leaderboard.players
+		const numFieldGolfers = golferData.length - NUM_GOLFERS_AUCTIONED
+
+		for (let golferRow = 0; golferRow < golferData.length; golferRow++) {
+			tableData.push(Object.assign({}, golferData[golferRow]))
+
+			let golfer = tableData[golferRow]
 			let actualVal = convertToDollars(0)
 
 			// setting a complete tie for first place before the tournament has started
@@ -106,60 +113,57 @@ function getState () {
 				golfersPaid++
 			}
 
-			realTimeData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')))
+			tableData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')))
 
 			for (let buyerRow = 0; buyerRow <= NUM_GOLFERS_AUCTIONED; buyerRow++) {
 				let buyer = calcuttaResults[buyerRow].cellsArray
 
 				if (_.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
-					realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
-					realTimeData[golferRow].odds = buyer[CALCUTTA_DOC_INDICES.ODDS] + '/1'
-					realTimeData[golferRow].cost = buyer[CALCUTTA_DOC_INDICES.COST].replace(/\s/g, '')
-					realTimeData[golferRow].expected_value = buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/\s/g, '')
+					tableData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
+					tableData[golferRow].odds = buyer[CALCUTTA_DOC_INDICES.ODDS] + '/1'
+					tableData[golferRow].cost = buyer[CALCUTTA_DOC_INDICES.COST].replace(/\s/g, '')
+					tableData[golferRow].expected_value = buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL].replace(/\s/g, '')
 					break
 				}
 
 				if (_.isEqual(buyerRow, NUM_GOLFERS_AUCTIONED)) {
 					// this golfer is in the field
-					realTimeData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
-					realTimeData[golferRow].odds = 'FIELD'
-					realTimeData[golferRow].cost = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.COST]) / numFieldGolfers)
-					realTimeData[golferRow].expected_value = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL]) / numFieldGolfers)
+					tableData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
+					tableData[golferRow].odds = 'FIELD'
+					tableData[golferRow].cost = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.COST]) / numFieldGolfers)
+					tableData[golferRow].expected_value = convertToDollars(convertToNumber(buyer[CALCUTTA_DOC_INDICES.EXPECTED_VAL]) / numFieldGolfers)
 					break
 				}
 			}
 		}
 
 		// go back through the data to split tied payouts
-		if (realTimeData.length > 0) {
-			let i = 0
-			while (i < golfersPaid - 1) {
-				let j = 1
-				let groupedPayout = getPayoutForPositionNumber(payoutInfo, i + 1)
-				while (_.isEqual(realTimeData[i].actual_value, realTimeData[i + j].actual_value)) {
-					if (_.isEqual(golfersPaid - 1, i + j)) {
-						j++
-						break
-					}
-					groupedPayout += getPayoutForPositionNumber(payoutInfo, i + j + 1)
+		let i = 0
+		while (i < golfersPaid - 1) {
+			let j = 1
+			let groupedPayout = getPayoutForPositionNumber(payoutInfo, i + 1)
+			while (_.isEqual(tableData[i].actual_value, tableData[i + j].actual_value)) {
+				if (_.isEqual(golfersPaid - 1, i + j)) {
 					j++
+					break
 				}
-
-				let tieCount = j
-				while (j > 0) {
-					realTimeData[i + j - 1].actual_value = convertToDollars(groupedPayout / tieCount)
-					j--
-				}
-				i += tieCount
+				groupedPayout += getPayoutForPositionNumber(payoutInfo, i + j + 1)
+				j++
 			}
+
+			let tieCount = j
+			while (j > 0) {
+				tableData[i + j - 1].actual_value = convertToDollars(groupedPayout / tieCount)
+				j--
+			}
+			i += tieCount
 		}
 	}
 
+	console.log('returning data')
+	console.log(tableData)
 	return {
-		calcuttaResults,
-		payoutInfo,
-		tournament: GolfStore.getCurrentTournament(),
-		realTimeData
+		tableData
 	}
 }
 
@@ -175,20 +179,23 @@ export default class LeaderBoard extends React.Component {
 	}
 
 	componentWillUnmount () {
-		GolfStore.removeChangeListener(() => this._onChange())
+		GolfStore.removeChangeListener()
 	}
 
 	render () {
+		console.log('displaying data')
+		console.log(this.state.tableData)
 		return (
 			<BootstrapTable
 				keyField="player_id"
-				data={this.state.realTimeData}
+				data={this.state.tableData}
 				columns={COLUMNS}
 			/>
 		)
 	}
 
 	_onChange () {
+		console.log('on change')
 		this.setState(getState())
 	}
 }

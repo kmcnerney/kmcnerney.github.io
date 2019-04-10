@@ -48,6 +48,7 @@ const Router = Backbone.Router.extend({
 		GolfActions.getPayoutInfo()
 		GolfActions.getCurrentTournament()
 		GolfActions.getRealTimeData()
+		setInterval(() => GolfActions.getRealTimeData(), 5000) // refresh data every 5 seconds
 		renderContent(Constants.LEADER_BOARD_PAGE, <LeaderBoard />)
 	}
 })
