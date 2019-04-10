@@ -8,14 +8,15 @@ import { Provider } from 'react-redux'
 
 import rootReducer from './reducers/root-reducer'
 
+// Styles
+import './sass/main.scss'
+
 // Actions
 import GolfActions from './actions/golf'
 
-// Styles
-import './less/main.less'
-
 // Components
 import LeaderBoard from './components/leader-board'
+import NavBar from './components/nav-bar'
 
 // Constants
 import Constants from './constants.js'
@@ -30,6 +31,7 @@ function renderContent (page, content) {
 	return ReactDOM.render(
 		<Provider store={store}>
 			<div>
+				<NavBar page={page} />
 				{content}
 			</div>
 		</Provider>, document.getElementById('root-div')

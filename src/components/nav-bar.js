@@ -2,41 +2,41 @@
 
 import React from 'react'
 
-import { Navbar, Nav, NavItem } from 'react-bootstrap'
+import Navbar from 'react-bootstrap/Navbar'
 
-// Constants
-import Constants from '../constants.js'
+// Stores
+import GolfStore from '../stores/golf'
+
+function getState () {
+	return {
+		tournamentName: GolfStore.getRealTimeData() ? GolfStore.getRealTimeData().leaderboard.tournament_name : []
+	}
+}
 
 export default class NavBar extends React.Component {
 	constructor (props) {
 		super(props)
-		this.signIn = this.signIn.bind(this)
+
+		this.state = getState()
+	}
+
+	componentDidMount () {
+		GolfStore.addChangeListener(() => this._onChange())
+	}
+
+	componentWillUnmount () {
+		GolfStore.removeChangeListener(() => this._onChange())
 	}
 
 	render () {
 		return (
-			<Navbar inverse className="landing-nav">
-				<Navbar.Header>
-					<Navbar.Brand>
-						<a href="#">{Constants.PROJECT_NAME}</a>
-					</Navbar.Brand>
-					<Navbar.Toggle />
-				</Navbar.Header>
-				<Navbar.Collapse>
-					<Nav pullRight>
-						<NavItem eventKey={'signIn'} onClick={() => this.signIn()}>Sign In</NavItem>
-					</Nav>
-				</Navbar.Collapse>
+			<Navbar bg="dark" variant="dark">
+				<Navbar.Brand href="#">{this.state.tournamentName}</Navbar.Brand>
 			</Navbar>
 		)
 	}
 
-	signIn (page) {
-		// gapi.auth2.getAuthInstance().signIn()
-		return null
+	_onChange () {
+		this.setState(getState())
 	}
-}
-
-NavBar.propTypes = {
-	page: React.PropTypes.string
 }

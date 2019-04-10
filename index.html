@@ -5,7 +5,7 @@
   <meta charset="utf-8">
 
   <title>Golf Calcutta</title>
-  <meta name="description" content="Golf Calcutta">
+  <meta name="description" content="Project">
   <meta name="author" content="Kevin McNerney">
 </head>
 
@@ -13,7 +13,6 @@
   <div id="root-div"></div>
 
 	<script src="https://www.gstatic.com/firebasejs/3.6.6/firebase.js"></script>
-	
 	<script>
 	  // Initialize Firebase
 	  var config = {
@@ -27,43 +26,5 @@
 	</script>
 
 	<script type="text/javascript" src="build/bundle.js" charset="utf-8"></script>
-	<!-- <script src="https://apis.google.com/js/api.js"></script>
-
-	<script>
-		var CLIENT_ID = '347297161830-3qbe3nldcr8ef6e1r6fkqsn458kddobn.apps.googleusercontent.com';
-		var API_KEY = 'AIzaSyCBGWPwzJQnwQnE_-YXHcwc5oVkhuz0o3M';
-
-		// Array of API discovery doc URLs for APIs used by the quickstart
-		var DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
-
-		// Authorization scopes required by the API; multiple scopes can be
-		// included, separated by spaces.
-		var SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly";
-
-		function start() {
-		  // 2. Initialize the JavaScript client library.
-		  gapi.client.init({
-		    'apiKey': API_KEY,
-		    // Your API key will be automatically added to the Discovery Document URLs.
-		    'discoveryDocs': DISCOVERY_DOCS,
-		    // clientId and scope are optional if auth is not required.
-		    'clientId': CLIENT_ID,
-		    'scope': SCOPES,
-		  }).then(function() {
-		    // 3. Initialize and make the API request.
-		    return gapi.client.sheets.spreadsheets.values.get({
-		          spreadsheetId: '1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM',
-		          range: 'A2:H81',
-		        })
-		  }).then(function(response) {
-		  	console.log('Calcutta Results:')
-		    console.log(response);
-		  }, function(reason) {
-		    console.log('Error: ' + reason.result.error.message);
-		  });
-		 };
-		// 1. Load the JavaScript client library.
-		gapi.load('client', start);
-	</script> -->
 </body>
 </html>

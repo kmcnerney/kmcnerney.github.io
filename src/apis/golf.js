@@ -3,7 +3,7 @@
 import $ from 'jquery'
 import sheetrock from 'sheetrock'
 
-const gDoc = 'https://docs.google.com/spreadsheets/d/1JIoQ7AIWbVXg7NI2Si_TwS8ZWwCYfIY563qohHxHF2Q/edit#gid=1000055250'
+const gDoc = 'https://docs.google.com/spreadsheets/d/1fMcWYd7g3WZxrpjE6tQ_NG37Tb6Pux6Xk5c3aY4vcbM/edit#gid=1000055250'
 
 const ajaxCalls = {
 	getCalcuttaResults (fn) {
@@ -12,6 +12,7 @@ const ajaxCalls = {
 			query: 'select A,B,C,D,E,F,G,H',
 			callback: function (error, options, response) {
 				if (!error) {
+					console.log('Calcutta Results:')
 					console.log(response)
 					return fn(null, response.rows)
 				} else {
@@ -27,6 +28,7 @@ const ajaxCalls = {
 			query: 'select J,K,L',
 			callback: function (error, options, response) {
 				if (!error) {
+					console.log('Payout Info:')
 					console.log(response)
 					return fn(null, response.rows)
 				} else {

@@ -23,20 +23,20 @@ const COLUMNS = [
 		text: 'Position'
 	},
 	{
-		dataField: 'today',
-		text: 'Today'
-	},
-	{
-		dataField: 'total',
-		text: 'Total'
-	},
-	{
 		dataField: 'player_bio.first_name',
 		text: 'Golfer'
 	},
 	{
 		dataField: 'player_bio.last_name',
 		text: ''
+	},
+	{
+		dataField: 'today',
+		text: 'Today'
+	},
+	{
+		dataField: 'total',
+		text: 'Total'
 	},
 	{
 		dataField: 'buyer',
@@ -95,6 +95,9 @@ function getState () {
 			// setting a complete tie for first place before the tournament has started
 			if (_.isEmpty(golfer.current_position)) {
 				golfer.current_position = 'T1'
+			}
+			if (!golfer.today) {
+				golfer.today = 0
 			}
 
 			if (golfersPaid <= NUM_GOLFERS_TO_PAY || _.isEqual('T' + currPosition, golfer.current_position)) {
@@ -165,22 +168,20 @@ export default class LeaderBoard extends React.Component {
 		super(props)
 
 		this.state = getState()
-
-		this._onChange = this._onChange.bind(this)
 	}
 
 	componentDidMount () {
-		GolfStore.addChangeListener(this._onChange)
+		GolfStore.addChangeListener(() => this._onChange())
 	}
 
 	componentWillUnmount () {
-		GolfStore.removeChangeListener(this._onChange)
+		GolfStore.removeChangeListener(() => this._onChange())
 	}
 
 	render () {
 		return (
 			<BootstrapTable
-				keyField="leaderBoard"
+				keyField="player_id"
 				data={this.state.realTimeData}
 				columns={COLUMNS}
 			/>
@@ -189,6 +190,5 @@ export default class LeaderBoard extends React.Component {
 
 	_onChange () {
 		this.setState(getState())
-	};
-
+	}
 }

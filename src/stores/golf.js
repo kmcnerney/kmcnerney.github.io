@@ -91,7 +91,7 @@ const GolfStore = _.assign({
 	}
 }, Store)
 
-GolfStore.dispatchToken = Dispatcher.register(({action}) => {
+GolfStore.dispatchToken = Dispatcher.register(({ action }) => {
 	const fn = _.noop
 
 	switch (action.actionType) {
