@@ -1,13 +1,11 @@
-1) Install dependencies:
+This repo is a quick start with everything you need and want for a production-ready, full-stack (React, Node, Firebase) project.
+Please open an issue with any questions or suggestions.
 
-```
-yarn
-```
+# Setup
+Install a JavaScript package manager, for example yarn (on Mac: `brew install yarn`). npm works too
 
-2) Run dev server:
+Install dependencies: `yarn` or `npm install`
 
-```
-npm run dev
-```
+Run dev server: `yarn start` or `npm start`
 
-3) Go to localhost:5000 to view. Any code changes should be automatically reflected in the browser.
+Open localhost:8080 in a browser. Any code changes will be automatically reloaded.
