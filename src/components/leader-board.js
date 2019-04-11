@@ -115,8 +115,6 @@ function getState () {
 
 			tableData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')))
 
-			console.log('calcuttaResults')
-			console.log(calcuttaResults)
 			for (let buyerRow = 0; buyerRow <= NUM_GOLFERS_AUCTIONED; buyerRow++) {
 				let buyer = calcuttaResults[buyerRow].cellsArray
 
