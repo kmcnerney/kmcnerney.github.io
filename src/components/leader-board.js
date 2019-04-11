@@ -10,7 +10,7 @@ import GolfStore from '../stores/golf'
 import BootstrapTable from 'react-bootstrap-table-next'
 
 const NUM_GOLFERS_TO_PAY = 10
-const NUM_GOLFERS_AUCTIONED = 42
+const NUM_GOLFERS_AUCTIONED = 47
 const CALCUTTA_DOC_INDICES = {
 	ODDS: 2,
 	BUYER: 5,
@@ -115,6 +115,8 @@ function getState () {
 
 			tableData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')))
 
+			console.log('calcuttaResults')
+			console.log(calcuttaResults)
 			for (let buyerRow = 0; buyerRow <= NUM_GOLFERS_AUCTIONED; buyerRow++) {
 				let buyer = calcuttaResults[buyerRow].cellsArray
 
