@@ -157,8 +157,6 @@ function getState () {
 		}
 	}
 
-	console.log('tableData')
-	console.log(tableData)
 	return {
 		tableData
 	}
