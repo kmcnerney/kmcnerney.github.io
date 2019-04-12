@@ -23,12 +23,8 @@ const COLUMNS = [
 		text: 'Position'
 	},
 	{
-		dataField: 'player_bio.first_name',
+		dataField: 'name',
 		text: 'Golfer'
-	},
-	{
-		dataField: 'player_bio.last_name',
-		text: ''
 	},
 	{
 		dataField: 'today',
@@ -118,7 +114,8 @@ function getState () {
 			for (let buyerRow = 0; buyerRow <= NUM_GOLFERS_AUCTIONED; buyerRow++) {
 				let buyer = calcuttaResults[buyerRow].cellsArray
 
-				if (_.isEqual(golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name, buyer[1])) {
+				tableData[golferRow].name = golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name
+				if (_.isEqual(tableData[golferRow].name.toLowerCase(), buyer[1].toLowerCase())) {
 					tableData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
 					tableData[golferRow].odds = buyer[CALCUTTA_DOC_INDICES.ODDS] + '/1'
 					tableData[golferRow].cost = buyer[CALCUTTA_DOC_INDICES.COST].replace(/\s/g, '')
@@ -160,6 +157,8 @@ function getState () {
 		}
 	}
 
+	console.log('tableData')
+	console.log(tableData)
 	return {
 		tableData
 	}
