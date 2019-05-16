@@ -10,7 +10,7 @@ import GolfStore from '../stores/golf'
 import BootstrapTable from 'react-bootstrap-table-next'
 
 const NUM_GOLFERS_TO_PAY = 10
-const NUM_GOLFERS_AUCTIONED = 47
+const NUM_GOLFERS_AUCTIONED = 148
 const CALCUTTA_DOC_INDICES = {
 	ODDS: 2,
 	BUYER: 5,
@@ -111,10 +111,10 @@ function getState () {
 
 			tableData[golferRow].actual_value = convertToDollars(convertToNumber(actualVal.replace(/\s/g, '')))
 
-			for (let buyerRow = 0; buyerRow <= NUM_GOLFERS_AUCTIONED; buyerRow++) {
+			for (let buyerRow = 0; buyerRow < NUM_GOLFERS_AUCTIONED; buyerRow++) {
 				let buyer = calcuttaResults[buyerRow].cellsArray
 
-				tableData[golferRow].name = golfer.player_bio.first_name + ' ' + golfer.player_bio.last_name
+				tableData[golferRow].name = golfer.player_bio.last_name + ', ' + golfer.player_bio.first_name
 				if (_.isEqual(tableData[golferRow].name.toLowerCase(), buyer[1].toLowerCase())) {
 					tableData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
 					tableData[golferRow].odds = buyer[CALCUTTA_DOC_INDICES.ODDS] + '/1'
@@ -124,6 +124,8 @@ function getState () {
 				}
 
 				if (_.isEqual(buyerRow, NUM_GOLFERS_AUCTIONED)) {
+					console.log('buyerRow')
+					console.log(calcuttaResults[buyerRow])
 					// this golfer is in the field
 					tableData[golferRow].buyer = buyer[CALCUTTA_DOC_INDICES.BUYER]
 					tableData[golferRow].odds = 'FIELD'
