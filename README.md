@@ -1,10 +1,12 @@
-This repo is a quick start with everything you need and want for a production-ready, full-stack (React, Node, Firebase) project.
-Please open an issue with any questions or suggestions.
+# Golf Calcutta Live Leaderboard
 
-# Setup
+## Setup
 Install a JavaScript package manager, for example yarn (on Mac: `brew install yarn`). npm works too
 
+## Build
 Install dependencies: `yarn` or `npm install`
+
+## Run
 
 Run dev server: `yarn start` or `npm start`
 
