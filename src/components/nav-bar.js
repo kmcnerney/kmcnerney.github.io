@@ -5,11 +5,11 @@ import React from 'react'
 import Navbar from 'react-bootstrap/Navbar'
 
 // Stores
-import GolfStore from '../stores/golf'
+import PgaStore from '../stores/pgaStore'
 
 function getState () {
 	return {
-		tournamentName: GolfStore.getRealTimeData() ? GolfStore.getRealTimeData().leaderboard.tournament_name : []
+		tournamentName: PgaStore.getRealTimeData() ? PgaStore.getRealTimeData().leaderboard.tournament_name : []
 	}
 }
 
@@ -21,11 +21,11 @@ export default class NavBar extends React.Component {
 	}
 
 	componentDidMount () {
-		GolfStore.addChangeListener(() => this._onChange())
+		PgaStore.addChangeListener(() => this._onChange())
 	}
 
 	componentWillUnmount () {
-		GolfStore.removeChangeListener(() => this._onChange())
+		PgaStore.removeChangeListener(() => this._onChange())
 	}
 
 	render () {

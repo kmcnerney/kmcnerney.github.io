@@ -5,21 +5,7 @@ import Dispatcher from '../dispatcher'
 // Constants
 import Constants from '../constants.js'
 
-const GolfActions = {
-	getCalcuttaResults (fn) {
-		Dispatcher.handleViewAction({
-			actionType: Constants.ACTIONS.GET_CALCUTTA_RESULTS,
-			fn
-		})
-	},
-
-	getPayoutInfo (fn) {
-		Dispatcher.handleViewAction({
-			actionType: Constants.ACTIONS.GET_PAYOUT_INFO,
-			fn
-		})
-	},
-
+const PgaActions = {
 	getCurrentTournament (fn) {
 		Dispatcher.handleViewAction({
 			actionType: Constants.ACTIONS.GET_CURRENT_TOURNAMENT,
@@ -35,4 +21,4 @@ const GolfActions = {
 	}
 }
 
-export default GolfActions
+export default PgaActions

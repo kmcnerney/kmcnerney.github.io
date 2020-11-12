@@ -4,7 +4,8 @@ import React from 'react'
 import _ from 'lodash'
 
 // Stores
-import GolfStore from '../stores/golf'
+import GoogleSheetsStore from '../stores/google-sheets'
+import PgaStore from '../stores/pgaStore'
 
 // Components
 import BootstrapTable from 'react-bootstrap-table-next'
@@ -76,9 +77,9 @@ function convertToDollars (num) {
 }
 
 function getState () {
-	const calcuttaResults = GolfStore.getCalcuttaResults()
-	const payoutInfo = GolfStore.getPayoutInfo()
-	const realTimeData = GolfStore.getRealTimeData()
+	const calcuttaResults = GoogleSheetsStore.getCalcuttaResults()
+	const payoutInfo = GoogleSheetsStore.getPayoutInfo()
+	const realTimeData = PgaStore.getRealTimeData()
 
 	const tableData = []
 
@@ -172,11 +173,13 @@ export default class LeaderBoard extends React.Component {
 	}
 
 	componentDidMount () {
-		GolfStore.addChangeListener(() => this._onChange())
+		GoogleSheetsStore.addChangeListener(() => this._onChange())
+		PgaStore.addChangeListener(() => this._onChange())
 	}
 
 	componentWillUnmount () {
-		GolfStore.removeChangeListener()
+		GoogleSheetsStore.removeChangeListener()
+		PgaStore.removeChangeListener()
 	}
 
 	render () {

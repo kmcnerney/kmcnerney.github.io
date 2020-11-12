@@ -12,7 +12,8 @@ import rootReducer from './reducers/root-reducer'
 import './sass/main.scss'
 
 // Actions
-import GolfActions from './actions/golf'
+import GoogleSheetsActions from './actions/google-sheets'
+import PgaActions from './actions/pga'
 
 // Components
 import LeaderBoard from './components/leader-board'
@@ -44,11 +45,11 @@ const Router = Backbone.Router.extend({
 	},
 
 	leaderBoard () {
-		GolfActions.getCalcuttaResults()
-		GolfActions.getPayoutInfo()
-		GolfActions.getCurrentTournament()
-		GolfActions.getRealTimeData()
-		setInterval(() => GolfActions.getRealTimeData(), 30000) // refresh data every 5 seconds
+		GoogleSheetsActions.getCalcuttaResults()
+		GoogleSheetsActions.getPayoutInfo()
+		PgaActions.getCurrentTournament()
+		PgaActions.getRealTimeData()
+		setInterval(() => PgaActions.getRealTimeData(), 30000) // refresh data every 5 seconds
 		renderContent(Constants.LEADER_BOARD_PAGE, <LeaderBoard />)
 	}
 })

@@ -7,9 +7,6 @@ import Store from './store'
 // APIs
 import PgaAPI from '../apis/pga'
 
-// Actions
-import Actions from '../actions/actions'
-
 // Constants
 import Constants from '../constants'
 
@@ -37,7 +34,7 @@ function getRealTimeData (fn) {
 		return fn('Waiting for tournament ID...')
 	}
 
-	PgaAPI.getRealTimeData(_currentTournament.tid, (err, res) => {
+	PgaAPI.getRealTimeData(13, (err, res) => {
 		if (err) {
 			return fn(err)
 		}
@@ -57,7 +54,7 @@ const PgaStore = _.assign({
 	}
 }, Store)
 
-PgaStore.dispatchToken = Dispatcher.register(({action}) => {
+PgaStore.dispatchToken = Dispatcher.register(({ action }) => {
 	const fn = _.noop
 
 	switch (action.actionType) {
@@ -72,7 +69,7 @@ PgaStore.dispatchToken = Dispatcher.register(({action}) => {
 				PgaStore.emitChange('getCurrentTournament', new Error('Failed to get current tournament.'))
 				fn(err)
 			} else {
-				Actions.getRealTimeData()
+				PgaStore.getRealTimeData()
 				PgaStore.emitChange('getCurrentTournament')
 				fn(null)
 			}
