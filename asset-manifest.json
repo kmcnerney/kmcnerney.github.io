@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/fantasy-football/static/css/main.073c9b0a.css",
+    "main.js": "/fantasy-football/static/js/main.644a9ca1.js",
+    "static/js/787.8049364f.chunk.js": "/fantasy-football/static/js/787.8049364f.chunk.js",
+    "index.html": "/fantasy-football/index.html",
+    "main.073c9b0a.css.map": "/fantasy-football/static/css/main.073c9b0a.css.map",
+    "main.644a9ca1.js.map": "/fantasy-football/static/js/main.644a9ca1.js.map",
+    "787.8049364f.chunk.js.map": "/fantasy-football/static/js/787.8049364f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.073c9b0a.css",
+    "static/js/main.644a9ca1.js"
+  ]
+}
