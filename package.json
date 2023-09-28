@@ -2,7 +2,7 @@
   "name": "fantasy-football",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://kmcnerney.github.io/fantasy-football",
+  "homepage": "https://kmcnerney.github.io",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -15,7 +15,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && cp CNAME build/",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
