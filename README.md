@@ -1,13 +1,19 @@
-# Golf Calcutta Live Leaderboard
+## Install
 
-## Setup
-Install a JavaScript package manager, for example yarn (on Mac: `brew install yarn`). npm works too
+`npm install`
 
 ## Build
-Install dependencies: `yarn` or `npm install`
 
-## Run
+`npm run build`
 
-Run dev server: `yarn start` or `npm start`
+## Test Locally
 
-Open localhost:8080 in a browser. Any code changes will be automatically reloaded.
+`npm run start`
+
+## Deploy
+
+`npm run deploy`
+
+## View
+
+Go to https://kmcnerney.github.io/fantasy-football
