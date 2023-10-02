@@ -48,7 +48,7 @@ const SCORES_ENDPOINT = 'https://guillotine-api-9268ebd959e7.herokuapp.com/live-
 
 
 async function getLiveScores(code) {
-  const scores = await axios.get('http://localhost:3001/live-projections')
+  const scores = await axios.get(SCORES_ENDPOINT)
   return scores.data
 }
 
