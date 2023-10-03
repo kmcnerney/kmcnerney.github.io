@@ -21,6 +21,7 @@ const columns = [
 // const CORS_PROXY_URL = 'https://corsproxy.io'
 // const YAHOO_API_HOST = 'https://api.login.yahoo.com'
 const SCORES_ENDPOINT = 'https://guillotine-api-9268ebd959e7.herokuapp.com/live-projections'
+//const SCORES_ENDPOINT = 'http://localhost:3001/live-projections'
 
 // async function yahooLogin(code) {
 //   console.log(`authing with yahoo using code: ${code}`)
@@ -48,8 +49,13 @@ const SCORES_ENDPOINT = 'https://guillotine-api-9268ebd959e7.herokuapp.com/live-
 
 
 async function getLiveScores(code) {
-  const scores = await axios.get(SCORES_ENDPOINT)
-  return scores.data
+  try {
+    const scores = await axios.get(SCORES_ENDPOINT)
+    return scores.data
+  } catch (e) {
+    console.error('failed to get scores', e)
+    return []
+  }
 }
 
 
