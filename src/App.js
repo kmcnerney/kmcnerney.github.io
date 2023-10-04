@@ -6,6 +6,10 @@ import DataTable from './DataTable'
 
 const columns = [
   {
+    Header: 'Rank',
+    accessor: 'rank',
+  },
+  {
     Header: 'Team Name',
     accessor: 'teamName',
   },
@@ -13,7 +17,32 @@ const columns = [
     Header: 'Projected Points',
     accessor: 'projectedPts',
   },
-];
+  {
+    Header: 'Current Points',
+    accessor: 'currentPts',
+  },
+  {
+    accessor: 'active',
+    show: false,
+  },
+]
+
+const tableProps = () => {
+  return {
+    style: { 
+      width: '100%',
+    }
+  }
+}
+
+const rowProps = ({values}) => {
+  return {
+    style: {
+      'color': values.active ? "black" : "gray",
+      'fontWeight': values.active ? "inherit" : "lighter"
+    }
+  }
+}
 
 // const HOMEPAGE = 'https://guillotine.football'
 // const YAHOO_CLIENT_ID = 'dj0yJmk9NGVBekNWbUplUndJJmQ9WVdrOWNYTldWakZUWlhRbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTJk'
@@ -89,7 +118,15 @@ export default class App extends React.Component {
     // }
 
     const scores = await getLiveScores()
-    this.setState({scores})
+    this.setState({
+      scores: scores.map((scoreEl, i) => {
+        return {
+          ...scoreEl,
+          rank: i + 1,
+          active: scoreEl.projectedPts > 0
+        }
+      })
+    })
     
   }
 
@@ -97,7 +134,28 @@ export default class App extends React.Component {
     console.log('in App.render', this.state)
     return (
       <div className="App">
-        <DataTable columns={columns} data={this.state.scores || []} />
+        <h3>Guillotine League</h3>
+
+        <p>
+          <a target="_blank" href="https://mattbernstein.shinyapps.io/GuillotineApp/">Historical reporting</a>
+          &nbsp;brought to you by Bernie
+        </p>
+
+        {
+          this.state.scores.length 
+          ? (
+            <DataTable 
+            columns={columns} 
+            data={this.state.scores || []} 
+            getTableProps={tableProps}
+            getRowProps={rowProps}
+          />
+          )
+          : (
+            <p>Loading live standings...</p>
+          )
+
+        }
       </div>
     )
   }
