@@ -14,12 +14,12 @@ const columns = [
     accessor: 'teamName',
   },
   {
-    Header: 'Projected Points',
-    accessor: 'projectedPts',
-  },
-  {
     Header: 'Current Points',
     accessor: 'currentPts',
+  },
+  {
+    Header: 'Projected Points',
+    accessor: 'projectedPts',
   },
   {
     accessor: 'active',
