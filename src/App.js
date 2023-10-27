@@ -122,6 +122,8 @@ export default class App extends React.Component {
       scores: scores.map((scoreEl, i) => {
         return {
           ...scoreEl,
+          projectedPts: scoreEl.projectedPts.toFixed(2),
+          currentPts: scoreEl.currentPts.toFixed(2),
           rank: i + 1,
           active: scoreEl.projectedPts > 0
         }
