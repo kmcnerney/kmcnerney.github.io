@@ -49,8 +49,6 @@ const rowProps = ({values}) => {
 // const YAHOO_CLIENT_SECRET = '67ff91fb2b422cd6fe3a947fe4dadb4ace874b2b'
 // const CORS_PROXY_URL = 'https://corsproxy.io'
 // const YAHOO_API_HOST = 'https://api.login.yahoo.com'
-const SCORES_ENDPOINT = 'https://app.guillotine.football/live-projections'
-//const SCORES_ENDPOINT = 'http://localhost:3001/live-projections'
 
 // async function yahooLogin(code) {
 //   console.log(`authing with yahoo using code: ${code}`)
@@ -76,10 +74,14 @@ const SCORES_ENDPOINT = 'https://app.guillotine.football/live-projections'
 //   }
 // }
 
-
+//const SCORES_ENDPOINT = 'https://app.guillotine.football/live-projections'
+//const SCORES_ENDPOINT = 'http://localhost:3001/live-projections'
+const SCORES_ENDPOINT = 'https://54fa-96-231-48-247.ngrok-free.app/live-projections'
 async function getLiveScores() {
   try {
-    const scores = await axios.get(SCORES_ENDPOINT)
+    const scores = await axios.get(SCORES_ENDPOINT, { 
+      headers: { 'ngrok-skip-browser-warning': true } 
+    })
     return scores.data
   } catch (e) {
     console.error('failed to get scores', e)
