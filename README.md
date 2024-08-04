@@ -16,4 +16,4 @@
 
 ## View
 
-Go to https://kmcnerney.github.io/fantasy-football
+Go to https://kmcnerney.github.io
